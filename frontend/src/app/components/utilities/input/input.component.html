@@ -1,0 +1,65 @@
+@if (formGroup && formControl) {
+    <div class="relative flex flex-col gap-1">
+        <label 
+            [for]="name"
+            class="px-4 flex flex-col relative bg-white/65 hover:bg-gray-100/60 rounded-lg shadow-lg border-b-2
+                 focus-within:border-blue-400"
+            [ngClass]="{
+                'border-neutral-400': !check && !checkError && !errorMessage,
+                'border-emerald-600': check,
+                'border-red-600': checkError || errorMessage,
+                }"
+            >
+            <input 
+                [formGroup]="formGroup"
+                [formControl]="formControl" 
+                [type]="type" 
+                [id]="name" 
+                [name]="name" 
+                [required]="isRequired"
+                placeholder=" " 
+                (focus)="onFocus()"
+                (blur)="onBlur(); onInputChange($event)"
+                class="peer h-max pb-1 pt-6 pr-12 font-semibold text-black focus:outline-none"
+            >
+            
+            <span 
+            class="pointer-events-none absolute left-4 text-neutral-700 transition-all duration-200 font-semibold"
+            [ngClass]="{
+                'top-1 text-xs -translate-y-0': hasFocus || formControl.value,
+                'top-1/2 text-base -translate-y-1/2': !hasFocus && !formControl.value
+            }">
+                {{ label }}
+            </span>
+
+            <span 
+                class="grid items-center absolute top-1/2 -translate-y-1/2 right-4"
+                [ngClass]="{
+                    'text-green-600/85': check,
+                    'text-red-600/65': checkError || errorMessage,
+                    'text-neutral-700': isChecking
+                }"
+            >
+                @if (isChecking) {
+                    <app-spinner></app-spinner>
+                } @else if (check) {
+                    <mat-icon class="material-symbols-outlined">verified</mat-icon>
+                } @else if (checkError || errorMessage) {
+                    <mat-icon class="material-symbols-outlined">error</mat-icon>
+                }
+            </span>
+
+            @if (isPassword && !errorMessage) {
+                <app-btn-show-passwd (showPasswd)="showPasswd($event)" />
+            }
+        </label>
+
+        @if (checkError) {
+            <span @fadeInOut class="absolute left-4 -bottom-5 text-sm font-semibold text-red-600">{{ checkError }}</span>
+        }
+
+        @if (errorMessage) {
+            <span @fadeInOut class="absolute left-4 -bottom-5 text-sm font-semibold text-red-600">{{ errorMessage }}</span>
+        }
+    </div>
+}

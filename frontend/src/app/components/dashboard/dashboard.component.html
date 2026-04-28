@@ -1,0 +1,33 @@
+<section class="h-full grid grid-rows-[auto_1fr] overflow-hidden">
+    <h1 class="font-bold text-3xl text-center mt-6 mb-2">Tus pr&oacute;ximos viajes</h1>
+
+    <div class="relative flex-1 min-h-[300px] overflow-y-auto scrollbar-hide">
+        @if(isLoading) {
+        <div class="absolute inset-0 flex items-center justify-center backdrop-blur-sm transition-all duration-300">
+            <app-spinner></app-spinner>
+        </div>
+        }
+
+        <div class="min-h-0 w-full p-2 pb-6 mx-auto sm:px-18 md:px-16 lg:px-28 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 2xl:grid-cols-3 sm:gap-4 lg:gap-8 transition-opacity duration-300"
+            [class.opacity-50]="isLoading">
+            @if(trips.length === 0 && !isLoading) {
+                <div class="col-span-full flex flex-col items-center justify-center text-black min-h-[60vh] h-full w-full">
+                    <span class="text-xl font-semibold mb-4">No hay viajes disponibles</span>
+                    <div class="flex-1 flex items-center justify-center w-full">
+                        <img src="./notrip.png" alt="" class="max-h-[400px] w-full max-w-xl object-contain mx-auto">
+                    </div>
+                </div>
+            } @else {
+                @for(trip of trips; track trip.id) {
+                    <app-trip 
+                      [trip]="trip" 
+                      (deleteEvent)="onTripDeleted()" 
+                      (updateEvent)="onTripChanged()"
+                      (refreshEvent)="onTripChanged()"
+                    >
+                    </app-trip>
+                }
+            }
+        </div>
+    </div>
+</section>

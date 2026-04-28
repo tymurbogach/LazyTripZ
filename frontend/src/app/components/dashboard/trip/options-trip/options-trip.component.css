@@ -1,0 +1,12 @@
+.bookmark-shape {
+  clip-path: polygon(
+    0 0,           /* esquina superior izquierda */
+    100% 0,        /* esquina superior derecha */
+    100% 85%,      /* lado derecho casi abajo */
+    50% 100%,      /* pico central abajo */
+    0 85%          /* lado izquierdo casi abajo */
+  );
+  /* Puedes ajustar los valores para cambiar la forma */
+  /* Opcional: sombra para resaltar el efecto */
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}

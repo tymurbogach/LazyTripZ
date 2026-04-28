@@ -1,0 +1,97 @@
+<section class="relative w-full min-h-60 grid grid-cols-1 grid-rows-[auto_1fr]">
+    <h2 class="w-max justify-self-center px-10 py-2 text-center text-lg text-black/95 font-semibold">Usuarios del viaje</h2>
+    <button (click)="closeDialog()" class="absolute flex top-0 right-0 p-2 cursor-pointer rounded-bl-2xl text-white bg-red-500/80 hover:bg-red-600 transition duration-200">
+        <mat-icon class="material-symbols-outlined">close</mat-icon>
+    </button>
+    <div class="grid grid-rows-[1fr_auto]">
+        <div class="flex flex-col gap-2 p-2">
+            @for (user of users; track $index) {
+                <div 
+                    class="px-2 py-1 flex items-center gap-2 hover:bg-neutral-400/30 transition-colors duration-400 cursor-pointer"
+                    [ngClass]="{'bg-neutral-400/30': selectedUser === user}"
+                    (click)="permission ? selectUser(user) : null"
+                >
+                    <div>
+                        @if (user.avatar_url && user.avatar_url !== null && user.avatar_url !== undefined && user.avatar_url !== 'http://localhost:8000/storage') {
+                            <span @fadeInOut class="w-8 h-8 flex items-center pointer-events-none">
+                                <img [src]="user.avatar_url" alt="Foto de {{ user.name }}" class="rounded-full">
+                            </span>
+                        } @else {
+                            <span @fadeInOut class="w-8 h-8 flex text-gray-100/85 bg-slate-600 bg-opacity-20 rounded-full items-center justify-center overflow-hidden ">
+                                <mat-icon class="material-symbols">person</mat-icon>
+                            </span> 
+                        }
+                    </div>
+                    <div class="w-full flex items-center justify-between">
+                        <p @fadeInOut class="font-semibold text-black/85">
+                            @if (user.id === currentUserId) {
+                                T&uacute;
+                            } @else {
+                                {{ user.username }}
+                            }
+                        <div class="flex items-center gap-4">
+                            @if (permission && selectedUser === user && users.length > 1) {
+                                <button 
+                                    @fadeInOut
+                                    (click)="removeUser(selectedUser)" 
+                                    class="flex items-center p-1 hover:bg-gray-300/80 hover:scale-105 active:bg-gray-400 text-gray-700
+                                        active:text-white rounded-full transition-all cursor-pointer hover:shadow-md">
+                                    <mat-icon class="material-symbols">person_remove</mat-icon>
+                                </button>
+                            }
+                            @if (user.pivot.permission === 'admin') {
+                                <p @fadeInOut class="flex px-1 py-0.5 text-sm text-lime-100 bg-emerald-700/85 rounded">Admin.</p>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        @if (permission) {
+            @if (selectedUser && users.length > 1) {
+                <button 
+                    (click)="updateUserPermission(selectedUser)" 
+                    class="h-14 relative flex items-center justify-center gap-4 px-4 py-2  text-white 
+                            transition-colors cursor-pointer active:text-white font-semibold border-t"
+                    [ngClass]="{
+                        'bg-gray-700 hover:bg-gray-800 border-gray-600': selectedUser.pivot.permission === 'admin', 
+                        'bg-emerald-700/85 hover:bg-emerald-800 border-emerald-600': selectedUser.pivot.permission !== 'admin'
+                        }"
+                    >
+                    <span 
+                        @fadeInOut
+                        class="absolute left-4 flex items-center p-1">
+                        <mat-icon class="material-symbols">admin_panel_settings</mat-icon>
+                    </span>
+                    <div @fadeInOut>
+                        @if (selectedUser.pivot.permission === 'admin') {
+                            <span>Descartar como admin.</span>
+                        } @else {
+                            <span>Designar como admin.</span>
+                        }
+                    </div>
+                </button>
+            } @else {
+                <app-search-users
+                    [trip]="trip"
+                    (userAdded)="getUsers()"
+                ></app-search-users>
+            }
+        } @else {
+            <button 
+                (click)="exitTrip()" 
+                class="h-14 relative flex items-center justify-center gap-4 px-4 py-2  text-white 
+                        transition-colors cursor-pointer active:text-white font-semibold border-t bg-gray-700 hover:bg-gray-800 border-gray-600"
+                >
+                <span 
+                    @fadeInOut
+                    class="absolute left-4 flex items-center p-1">
+                    <mat-icon class="material-symbols">exit_to_app</mat-icon>
+                </span>
+                <div @fadeInOut>
+                    <span>Salir del viaje</span>
+                </div>
+            </button>
+        }
+    </div>
+</section>

@@ -1,0 +1,219 @@
+/* Animaciones */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Estilos personalizados */
+:host {
+  display: block;
+}
+
+/* Estilos para el stepper */
+.step-item {
+  transition: all 0.3s ease;
+}
+
+@media (min-width: 1024px) {
+  .step-item:hover {
+    transform: translateX(5px);
+  }
+}
+
+/* Estilos para las tarjetas de recomendaciones */
+.recommendation-card {
+  transition: all 0.3s ease;
+}
+
+@media (min-width: 640px) {
+  .recommendation-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  }
+}
+
+/* Estilos para los botones */
+button {
+  transition: all 0.2s ease;
+}
+
+@media (min-width: 640px) {
+  button:not(:disabled):hover {
+    transform: translateY(-1px);
+  }
+}
+
+button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Estilos para el contenedor principal */
+.main-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+}
+
+/* Estilos para el stepper lateral */
+.side-stepper {
+  position: relative;
+}
+
+@media (min-width: 1024px) {
+  .side-stepper {
+    position: sticky;
+    top: 1.5rem;
+  }
+}
+
+/* Estilos para el contenido principal */
+.main-content {
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+/* Estilos para la barra de progreso */
+.progress-bar {
+  height: 0.5rem;
+  background-color: #e5e7eb;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background-color: #2563eb;
+  transition: width 0.5s ease;
+}
+
+/* Estilos para los iconos de los pasos */
+.step-icon {
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+@media (min-width: 640px) {
+  .step-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+}
+
+.step-icon mat-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.step-icon span {
+  position: relative;
+  z-index: 1;
+}
+
+.step-icon.active {
+  background-color: #2563eb;
+  color: white;
+}
+
+.step-icon.completed {
+  background-color: #059669;
+  color: white;
+}
+
+.step-icon.pending {
+  background-color: #f3f4f6;
+  color: #6b7280;
+}
+
+/* Estilos para las líneas conectoras */
+.connector-line {
+  position: absolute;
+  left: 1rem;
+  top: 3rem;
+  width: 2px;
+  height: 1.5rem;
+  transition: background-color 0.3s ease;
+}
+
+@media (min-width: 640px) {
+  .connector-line {
+    left: 1.25rem;
+    top: 3.5rem;
+    height: 2rem;
+  }
+}
+
+.connector-line.completed {
+  background-color: #2563eb;
+}
+
+.connector-line.pending {
+  background-color: #e5e7eb;
+}
+
+/* Ajustes responsivos adicionales */
+@media (max-width: 639px) {
+  .main-content {
+    margin: 0 -1rem;
+    border-radius: 0;
+  }
+  
+  .side-stepper {
+    margin-bottom: 1rem;
+  }
+}
+
+/* Mejoras de accesibilidad */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Estilos para el scrollbar */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Estilos para las tarjetas de recomendaciones */
+.bg-gray-50 {
+  transition: all 0.3s ease;
+}
+
+.bg-gray-50:hover {
+  transform: translateY(-2px);
+}
+
+/* Estilos para el spinner de carga */
+.mat-spinner {
+  display: inline-block;
+  vertical-align: middle;
+}

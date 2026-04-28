@@ -1,0 +1,8 @@
+<div class="h-full grid grid-cols-1 grid-rows-[auto_1fr] bg-white/35" [class.with-sidebar]="showLayout">
+  @if(showLayout){
+    <app-header (toggleSidenav)="toggleSidenav()"></app-header>
+  }
+  <main class="min-h-0 w-full overflow-hidden">
+    <router-outlet />
+  </main>
+</div>

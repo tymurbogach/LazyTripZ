@@ -1,0 +1,38 @@
+/* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=Arima:wght@400;600;700&display=swap');
+@import 'weather-icons/css/weather-icons.min.css';
+@import "tailwindcss";
+@import 'tailwind-scrollbar-hide/v4';
+
+@layer base {
+  body {
+    font-family: 'Arima', cursive !important;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  mat-label {
+    font-family: 'Arima', cursive !important;
+  }
+  mat-form-field {
+    font-family: 'Arima', cursive !important;
+  }
+  mat-input {
+    background: none !important;
+  }
+  mat-error {
+    font-family: 'Arima', cursive !important;
+  }
+  .cdk-overlay-pane {
+    background: white !important;
+  }
+  .mdc-text-field--filled:not(.mdc-text-field--disabled){
+    background: rgba(255, 255, 255, 0.7) !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2) !important;
+  }
+  .mat-mdc-dialog-surface {
+    border-radius: 1rem !important; 
+    background-color: rgba(255, 255, 255, 1) !important; 
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2) !important; 
+  }
+}

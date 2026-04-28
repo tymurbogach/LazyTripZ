@@ -1,0 +1,9 @@
+<button (click)="login()" class="relative w-full h-12 py-1 px-4 font-semibold flex justify-center items-center gap-3
+             hover:bg-black/80 active:bg-black hover:text-white rounded-lg transition-all cursor-pointer shadow-lg bg-white/95">
+    <img src="/google-icon.svg" alt="Icono Google" class="w-5 absolute left-4 top-1/2 -translate-y-1/2" />
+    @if (isLoading) {
+        <app-auth-callback></app-auth-callback>
+    } @else {
+        Inicia sesión con Google
+    }
+</button>

@@ -1,0 +1,79 @@
+<form @fadeInOut [formGroup]="form" class="p-4 sm:p-0 flex flex-col gap-6">
+    <fieldset class="grid grid-cols-1 auto-rows-max gap-6 transition-all">
+        <app-input
+            label="Nombre"
+            [name]="'name'"
+            [formGroup]="form"
+            [formControl]="nameControl"
+            [value]="name"
+            [errorMessage]="errorMessages['name']"
+            (valueChange)="name = $event"
+            (focus)="onInputFocus($event)"
+        >
+        </app-input>
+        <app-input
+            label="Usuario"
+            [name]="'username'"
+            [formGroup]="form"
+            [formControl]="usernameControl"
+            [value]="username"
+            [errorMessage]="errorMessages['username']"
+            (valueChange)="username = $event"
+            (focus)="onInputFocus($event)"
+            (usernameValidated)="onCheckUsername($event)"
+        >
+        </app-input>
+        <app-input
+            label="Email"
+            [name]="'email'"
+            [formGroup]="form"
+            [formControl]="emailControl"
+            [value]="email"
+            [errorMessage]="errorMessages['email']"
+            (valueChange)="email = $event"
+            (focus)="onInputFocus($event)"
+            (emailValidated)="onCheckEmail($event)"
+        >
+        </app-input>
+        <app-input
+            label="Contrase&ntilde;a"
+            [name]="'password'"
+            [type]="InputType.password"
+            [formGroup]="form"
+            [formControl]="passwordControl"
+            [isPassword]="true"
+            [value]="password"
+            [errorMessage]="errorMessages['password']"
+            (valueChange)="password = $event"
+            (focus)="onInputFocus($event)"
+        >
+        </app-input>
+        <app-input
+            label="Confirma la contrase&ntilde;a"
+            [name]="'confirmPassword'"
+            [type]="InputType.password"
+            [formGroup]="form"
+            [formControl]="confirmPasswordControl"
+            [isPassword]="true"
+            [value]="confirmPassword"
+            [errorMessage]="errorMessages['confirmPassword']"
+            (valueChange)="confirmPassword = $event"
+            (focus)="onInputFocus($event)"
+        >
+        </app-input>
+    </fieldset>
+
+    <div class="grid grid-cols-1 grid-flow-row gap-2">
+        <button (click)="register()" class="h-12 py-1 px-4 flex items-center justify-center font-semibold bg-emerald-600/75 hover:bg-emerald-700/80 active:bg-emerald-800 text-white rounded-lg transition-all cursor-pointer shadow-lg">
+            @if (!isLoading) {
+                Reg&iacute;strate
+            } @else {
+                <app-spinner></app-spinner>
+            }
+        </button>
+
+        <a routerLink="/auth/login" class="w-max py-1 px-4 justify-self-center font-semibold hover:text-sky-900 hover:underline transition-all cursor-pointer">
+            ¿Tienes una cuenta? Inicia sesi&oacute;n
+        </a>
+    </div>
+</form>

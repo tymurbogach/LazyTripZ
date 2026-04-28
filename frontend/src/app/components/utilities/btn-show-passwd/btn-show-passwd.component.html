@@ -1,0 +1,10 @@
+<button 
+    (mousedown)="toggleShowPasswd()" 
+    (mouseup)="toggleShowPasswd()" 
+    class="p-2 grid items-center absolute top-1/2 -translate-y-1/2 right-2 text-neutral-600 cursor-pointer rounded-full
+        hover:bg-neutral-400/50 transition-all">
+    
+    <mat-icon class="material-symbols-outlined">
+        {{ currentIcon }}
+    </mat-icon>
+</button>

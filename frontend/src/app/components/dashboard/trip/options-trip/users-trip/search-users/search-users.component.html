@@ -1,0 +1,46 @@
+<div>
+    @if (searchTerm && userSuggestions.length > 0) {
+        <div>
+            @for (suggestion of userSuggestions; track $index) {
+                <li class="flex px-4 py-1 items-center justify-between bg-gray-700 border-t border-gray-600 text-white">
+                    <div class="flex items-center gap-4">
+                        @if (suggestion.avatar_url && suggestion.avatar_url !== null && suggestion.avatar_url !== undefined && suggestion.avatar_url !== 'http://localhost:8000/storage') {
+                            <div @fadeInOut class="w-6 h-6 rounded-full items-center justify-center border border-white border-opacity-30 overflow-hidden flex">
+                                <img 
+                                    [src]="suggestion.avatar_url" 
+                                    alt="Avatar de usuario"
+                                    class="object-cover w-full h-full"
+                                />
+                            </div>
+                        } @else {
+                            <span @fadeInOut class="w-6 h-6 text-gray-800/85 bg-white bg-opacity-20 rounded-full items-center justify-center border border-white border-opacity-30 overflow-hidden grid">
+                                <mat-icon class="material-symbols">person</mat-icon>
+                            </span>
+                        }
+                        <span @fadeInOut>{{ suggestion.username }}</span>
+                    </div>
+                    <button @fadeInOut (click)="addUser(suggestion)" 
+                            class="flex p-1 text-white cursor-pointer rounded-full hover:bg-gray-600 transition-all hover:scale-105 hover:shadow-md">
+                        <mat-icon class="material-symbols">person_add</mat-icon>
+                    </button>
+                </li>
+            }
+        </div>
+    }
+    <div class="h-14 relative flex items-center bg-gray-700 hover:bg-gray-800 text-white transition-colors 
+                border-t border-gray-600">
+        <span
+            @fadeInOut
+            class="absolute left-4 flex items-center justify-center font-semibold">
+            <mat-icon class="material-symbols">person_search</mat-icon>
+        </span>
+        <input 
+            @fadeInOut
+            type="text" 
+            [(ngModel)]="searchTerm"
+            (input)="onSearchUser()"
+            placeholder="Buscar usuario..." 
+            class="pl-14 pr-4 py-2 w-full h-full bg-gray-700/50 text-white rounded placeholder:font-light focus:outline-none transition-colors"
+        >
+    </div>
+</div>

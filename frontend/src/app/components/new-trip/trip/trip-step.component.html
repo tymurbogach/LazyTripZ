@@ -1,0 +1,67 @@
+<!-- Formulario de datos del viaje (paso 1) -->
+<div [formGroup]="parentForm">
+
+  <!-- Campo: Nombre del viaje -->
+  <label class="block mb-2 font-medium">Nombre del viaje*</label>
+  <input formControlName="name" type="text" class="w-full p-2 mb-4 border rounded bg-gray-100">
+
+  <!-- Campos: Número de adultos y niños -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div>
+      <label class="block mb-2 font-medium">Número de adultos*</label>
+      <input formControlName="adults" type="number" min="1" class="w-full p-2 mb-4 border rounded bg-gray-100">
+    </div>
+    <div>
+      <label class="block mb-2 font-medium">Número de niños*</label>
+      <input formControlName="children" type="number" min="0" class="w-full p-2 mb-4 border rounded bg-gray-100">
+    </div>
+  </div>
+
+  <!-- Sección: Selección de medios de transporte -->
+  <label class="block mb-2 font-medium">Medios de transporte</label>
+  <div class="flex gap-4 mb-6">
+    <!-- Botones para seleccionar/deseleccionar transportes disponibles -->
+    <button *ngFor="let option of transportOptions"
+            type="button"
+            (click)="toggleTransport(option)"
+            [ngClass]="{
+              'bg-blue-600 text-white': isTransportSelected(option),
+              'bg-gray-300 text-black': !isTransportSelected(option)
+            }"
+            class="w-16 h-16 rounded-full shadow hover:brightness-90 transition-colors flex items-center justify-center">
+      
+      <!-- Ícono correspondiente al transporte (Material Icons) -->
+      <mat-icon
+        style="font-size: 3rem; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;"
+        class="leading-none">
+        {{ getTransportIcon(option) }}
+      </mat-icon>
+    </button>
+  </div>
+
+  <!-- Sección: Selección de mascotas -->
+  <label class="block mb-2 font-medium">Mascotas</label>
+  <div class="flex gap-6 mb-4">
+    <!-- Botón: Perro -->
+    <button type="button"
+            (click)="togglePet('dog')"
+            [ngClass]="{
+              'bg-green-600 text-white': isPetSelected('dog'),
+              'bg-gray-300 text-black': !isPetSelected('dog')
+            }"
+            class="flex items-center justify-center w-16 h-16 rounded-full shadow hover:brightness-90 transition-colors">
+      <fa-icon [icon]="faDog" class="text-[2.5rem] leading-none" style="vertical-align: middle;"></fa-icon>
+    </button>
+
+    <!-- Botón: Gato -->
+    <button type="button"
+            (click)="togglePet('cat')"
+            [ngClass]="{
+              'bg-green-600 text-white': isPetSelected('cat'),
+              'bg-gray-300 text-black': !isPetSelected('cat')
+            }"
+            class="flex items-center justify-center w-16 h-16 rounded-full shadow hover:brightness-90 transition-colors">
+      <fa-icon [icon]="faCat" class="text-[2.5rem] leading-none" style="vertical-align: middle;"></fa-icon>
+    </button>
+  </div>
+</div>

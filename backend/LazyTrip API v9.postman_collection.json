@@ -1,0 +1,1247 @@
+{
+	"info": {
+		"_postman_id": "5c1a7fcc-5f83-4f96-983c-839d63ef1565",
+		"name": "LazyTrip API v9",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "39341191",
+		"_collection_link": "https://tfgbackend.postman.co/workspace/TFG_BACKEND-Workspace~9193c659-191e-4c0f-8b67-e216fd70a244/collection/39341191-5c1a7fcc-5f83-4f96-983c-839d63ef1565?action=share&source=collection_link&creator=39341191"
+	},
+	"item": [
+		{
+			"name": "1. AUTENTICACIÓN",
+			"item": [
+				{
+					"name": "REGISTRO DE USUARIO",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Requested-With",
+								"value": "XMLHttpRequest",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Juan Pérez\",\n    \"email\": \"juan.perez@example.com\",\n    \"number_phone\": \"+34612345678\",\n    \"username\": \"juanperez\",\n    \"password\": \"Password123!\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/register",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "INICIO DE SESIÓN",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData = pm.response.json();",
+									"if (pm.response.code === 200 && jsonData.data) {",
+									"    pm.environment.set(\"access_token\", jsonData.data);",
+									"    console.log(\"Token guardado:\", jsonData.data);",
+									"} else {",
+									"    console.log(\"No se pudo guardar el token.\");",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Requested-With",
+								"value": "XMLHttpRequest",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"juanperez\",\n    \"password\": \"Password123!\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CERRAR SESIÓN",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Requested-With",
+								"value": "XMLHttpRequest",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/auth/logout",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "2. PERFIL DE USUARIO",
+			"item": [
+				{
+					"name": "OBTENER DATOS DEL USUARIO",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Requested-With",
+								"value": "XMLHttpRequest",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/user",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ACTUALIZAR DATOS DEL USUARIO",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "X-Requested-With",
+								"value": "XMLHttpRequest",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Juan Antonio Pérez García\",\n    \"email\": \"juan.antonio@example.com\",\n    \"number_phone\": \"+34698765432\",\n    \"username\": \"juanantonio\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/user",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "OBTENER VIAJES DEL USUARIO",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Requested-With",
+								"value": "XMLHttpRequest",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/user/trips",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"trips"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "3. VIAJES",
+			"item": [
+				{
+					"name": "CREAR VIAJE",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Requested-With",
+								"value": "XMLHttpRequest",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Viaje a Barcelona\",\n    \"adults\": 2,\n    \"children\": 1,\n    \"transport\": [\"car\", \"train\"]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/trips",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"trips"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ACTUALIZAR VIAJE",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "X-Requested-With",
+								"value": "XMLHttpRequest",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Viaje a Barcelona y Costa Brava\",\n    \"adults\": 2,\n    \"children\": 1,\n    \"transport\": [\"car\", \"train\"]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/trips/28",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"trips",
+								"28"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ACTUALIZAR ESTADO DEL VIAJE",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "X-Requested-With",
+								"value": "XMLHttpRequest",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"status\": \"cancelado\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/trips/28/status",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"trips",
+								"28",
+								"status"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "4. UBICACIONES",
+			"item": [
+				{
+					"name": "AÑADIR UBICACIÓN",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Requested-With",
+								"value": "XMLHttpRequest",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"locality\": \"Barcelona\",\n    \"province\": \"Barcelona\",\n    \"country\": \"España\",\n    \"start_date\": \"2025-07-01 00:00:00\",\n    \"end_date\": \"2025-07-05 23:59:59\",\n    \"notes\": \"Estancia en el centro de Barcelona\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/trips/{{trip_id}}/locations",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"trips",
+								"{{trip_id}}",
+								"locations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ACTUALIZAR UBICACIÓN",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "X-Requested-With",
+								"value": "XMLHttpRequest",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"locality\": \"Barcelona\",\n    \"province\": \"Barcelona\",\n    \"country\": \"España\",\n    \"start_date\": \"2025-07-01 00:00:00\",\n    \"end_date\": \"2025-07-07 23:59:59\",\n    \"notes\": \"Estancia en el centro de Barcelona, cerca de la Sagrada Familia\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/trips/{{trip_id}}/locations/{{location_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"trips",
+								"{{trip_id}}",
+								"locations",
+								"{{location_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "5. ACTIVIDADES",
+			"item": [
+				{
+					"name": "CREAR ACTIVIDAD",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Requested-With",
+								"value": "XMLHttpRequest",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"description\": \"Visita a la Sagrada Familia\",\n    \"day\": \"2025-07-02 10:00:00\",\n    \"time_of_day\": \"morning\",\n    \"location_id\": 1,\n    \"duration\": 2,\n    \"cost\": 25.50,\n    \"notes\": \"Entrada incluida, visita guiada\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/trips/{{trip_id}}/activities",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"trips",
+								"{{trip_id}}",
+								"activities"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ACTUALIZAR ACTIVIDAD",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "X-Requested-With",
+								"value": "XMLHttpRequest",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"description\": \"Visita a la Sagrada Familia y el Parque Güell\",\n    \"day\": \"2025-07-02 09:00:00\",\n    \"time_of_day\": \"morning\",\n    \"location_id\": 1,\n    \"duration\": 4,\n    \"cost\": 35.50,\n    \"notes\": \"Entrada y guía incluidos, transporte público\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/trips/{{trip_id}}/activities/{{activity_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"trips",
+								"{{trip_id}}",
+								"activities",
+								"{{activity_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "6. RECOMENDACIONES",
+			"item": [
+				{
+					"name": "CREAR RECOMENDACIÓN",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Requested-With",
+								"value": "XMLHttpRequest",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"description\": \"Llevar paraguas y chaqueta ligera\",\n    \"type_id\": 1,\n    \"notes\": \"El tiempo puede cambiar rápidamente en Barcelona\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/trips/{{trip_id}}/recommendations",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"trips",
+								"{{trip_id}}",
+								"recommendations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ACTUALIZAR RECOMENDACIÓN",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "X-Requested-With",
+								"value": "XMLHttpRequest",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"description\": \"Llevar paraguas, chaqueta ligera y calzado cómodo\",\n    \"type_id\": 1,\n    \"notes\": \"El tiempo puede cambiar rápidamente y hay que caminar mucho\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/trips/{{trip_id}}/recommendations/{{recommendation_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"trips",
+								"{{trip_id}}",
+								"recommendations",
+								"{{recommendation_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "7. VALORACIONES",
+			"item": [
+				{
+					"name": "CREAR VALORACIÓN",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Requested-With",
+								"value": "XMLHttpRequest",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"rating\": 5,\n    \"comment\": \"Excelente viaje, muy bien organizado y con actividades interesantes\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/trips/{{trip_id}}/ratings",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"trips",
+								"{{trip_id}}",
+								"ratings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ACTUALIZAR VALORACIÓN",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "X-Requested-With",
+								"value": "XMLHttpRequest",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"rating\": 4,\n    \"comment\": \"Muy buen viaje, pero faltaron algunas actividades planeadas\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/trips/{{trip_id}}/ratings/{{rating_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"trips",
+								"{{trip_id}}",
+								"ratings",
+								"{{rating_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "8. DIARIO",
+			"item": [
+				{
+					"name": "OBTENER DIARIOS DEL VIAJE",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Requested-With",
+								"value": "XMLHttpRequest",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/trip/{{trip}}/diaries",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"trip",
+								"{{trip}}",
+								"diaries"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CREAR ENTRADA EN EL DIARIO",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Requested-With",
+								"value": "XMLHttpRequest",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "image",
+									"type": "file",
+									"src": "/path/to/your/image.jpg"
+								},
+								{
+									"key": "description",
+									"value": "Un día increíble en la playa",
+									"type": "text"
+								},
+								{
+									"key": "date",
+									"value": "2024-03-24",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/trip/{{trip}}/diaries",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"trip",
+								"{{trip}}",
+								"diaries"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ACTUALIZAR ENTRADA DEL DIARIO",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "X-Requested-With",
+								"value": "XMLHttpRequest",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "image",
+									"type": "file",
+									"src": "/path/to/your/new-image.jpg"
+								},
+								{
+									"key": "description",
+									"value": "Actualización del día en la playa",
+									"type": "text"
+								},
+								{
+									"key": "date",
+									"value": "2024-03-24",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/trip/{{trip}}/diaries/{{diary}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"trip",
+								"{{trip}}",
+								"diaries",
+								"{{diary}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ELIMINAR ENTRADA DEL DIARIO",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-Requested-With",
+								"value": "XMLHttpRequest",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/trip/{{trip}}/diaries/{{diary}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"trip",
+								"{{trip}}",
+								"diaries",
+								"{{diary}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "9. MASCOTAS",
+			"item": [
+				{
+					"name": "AÑADIR MASCOTAS",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Requested-With",
+								"value": "XMLHttpRequest",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"pets\": [\n        {\n            \"type\": \"dog\"\n        },\n        {\n            \"type\": \"cat\"\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/trips/{{trip_id}}/pets",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"trips",
+								"{{trip_id}}",
+								"pets"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ELIMINAR MASCOTAS",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-Requested-With",
+								"value": "XMLHttpRequest",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"pets\": [\n        {\n            \"id\": 1\n        },\n        {\n            \"id\": 2\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/trips/{{trip_id}}/pets",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"trips",
+								"{{trip_id}}",
+								"pets"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "10. USUARIOS DEL VIAJE",
+			"item": [
+				{
+					"name": "AÑADIR USUARIO",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Requested-With",
+								"value": "XMLHttpRequest",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"permission\": \"admin\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/trips/{{trip_id}}/users/{{user_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"trips",
+								"{{trip_id}}",
+								"users",
+								"{{user_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ACTUALIZAR PERMISO",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "X-Requested-With",
+								"value": "XMLHttpRequest",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"permission\": \"user\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/trips/{{trip_id}}/users/{{user_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"trips",
+								"{{trip_id}}",
+								"users",
+								"{{user_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

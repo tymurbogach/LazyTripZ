@@ -1,0 +1,64 @@
+<div class="w-full flex flex-col bg-white/45 shadow-lg shadow-neutral-400">
+    <div class="md:hidden relative pt-3 pb-1 flex justify-center">
+        <button 
+            [routerLink]="['/dashboard']" 
+            class="flex p-0.5 absolute left-2 lg:left-10 top-1/2 -translate-y-1/2 cursor-pointer rounded-full hover:bg-neutral-400/60 transition-all duration-200"
+        >
+            <mat-icon class="material-symbols-outlined !flex items-center justify-center !text-xl">arrow_back</mat-icon>
+        </button>
+        <div class="font-bold text-xl self-center">
+            <h1>{{ currentLocation }}</h1>
+        </div>
+    </div>
+
+    <div class="hidden relative py-2 md:flex flex-row gap-2 justify-center items-center transition-all duration-500 overflow-hidden">
+        <button 
+            [routerLink]="['/dashboard']" 
+            class="flex p-0.5 absolute left-2 lg:left-10 top-1/2 -translate-y-1/2 cursor-pointer rounded-full hover:bg-neutral-400/60 transition-all duration-200"
+        >
+            <mat-icon class="material-symbols-outlined !flex items-center justify-center !text-xl">arrow_back</mat-icon>
+        </button>
+
+        @for (location of locations; track $index) {
+            @if (location.locality == currentLocation) {
+                <a 
+                    [routerLink]="['/details_weather_trip', tripId, location.locality]" 
+                    class="p-1 text-xl font-bold text-sky-900 transition-all duration-300"
+                >
+                    {{ location.locality }}
+                </a>
+            } @else {
+                 <a 
+                    [routerLink]="['/details_weather_trip', tripId, location.locality]" 
+                    class="p-1 font-bold text-black/60 hover:text-sky-900/90 hover:scale-105 transition-all duration-300"
+                >
+                    {{ location.locality }}
+                </a>
+            }
+        }
+    </div>
+
+    @if (locations && locations.length > 1) {
+        <div class="md:hidden flex flex-col justify-center items-center transition-all duration-500 overflow-hidden"
+            [ngClass]="expand ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'"
+        >
+            @for (location of locations; track $index) {
+                @if (location.locality != currentLocation) {
+                    <a 
+                        [routerLink]="['/details_weather_trip', tripId, location.locality]" 
+                        class="p-1 font-bold text-black/60 hover:text-sky-900/90 hover:scale-105 transition-all duration-300"
+                    >
+                        {{ location.locality }}
+                    </a>
+                }
+            }
+        </div>
+        
+        <button (click)="expandMenu()" 
+                class="md:hidden  p-1 flex self-center cursor-pointer rounded-full hover:bg-neutral-400/60 transition-all duration-800"
+                [ngClass]="expand ? 'rotate-180' : 'rotate-0'"
+        >
+            <mat-icon class="material-symbols-outlined">expand_more</mat-icon>
+        </button>
+    }
+</div>

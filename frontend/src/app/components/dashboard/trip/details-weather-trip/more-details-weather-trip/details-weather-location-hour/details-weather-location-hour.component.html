@@ -1,0 +1,22 @@
+<div
+    class="w-full h-fit px-2 grid grid-cols-[auto_1fr] text-xl font-semibold text-white bg-gradient-to-br from-amber-950/95 to-amber-900/90 rounded shadow-lg shadow-neutral-700">
+    <div class="flex gap-1 sm:gap-0 lg:gap-2 items-center">
+        <span class="w-16 h-full flex justify-start items-center">
+            {{ time }}
+        </span>
+        <span class="w-20 h-full flex justify-center items-center">
+            <img [src]="iconUrl" [alt]="forecast" draggable="false" class="h-full">
+        </span>
+        <span class="w-20 h-full flex justify-center items-center">
+            {{ temperature }}º
+        </span>
+    </div>
+    <div class="relative flex justify-end items-center gap-1">
+        <span class="w-10 h-full absolute right-14 flex justify-center items-center">
+            <mat-icon class="material-symbols-outlined">water_drop</mat-icon>
+        </span>
+        <span class="w-max h-full flex justify-center items-center">
+            {{ chanceOfRain }}%
+        </span>
+    </div>
+</div>

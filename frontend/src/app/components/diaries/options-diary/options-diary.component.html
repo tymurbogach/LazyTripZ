@@ -1,0 +1,28 @@
+<div class="absolute h-max top-0 right-2 flex flex-col items-center gap-3 p-0 rounded-b-xl w-16 transition-all 
+            duration-500 bg-gray-700 hover:bg-gray-800 shadow-lg shadow-gray-600 z-20"
+    [ngClass]="expand ? 'max-h-96 opacity-100 pb-6' : 'max-h-max pb-0'">
+    
+    <!-- Marcador menú tipo bookmark -->
+    <button (click)="toogleOptions()"
+        class="flex justify-center w-16 h-16 items-center transition-all duration-800 cursor-pointer text-white bookmark-shape"
+        [ngClass]="expand ? 'rotate-180' : 'rotate-0'">
+        <mat-icon class="material-symbols">settings</mat-icon>
+    </button>
+    
+    <div *ngIf="expand" @expandCollapse class="flex flex-col gap-3 px-4 transition-all duration-500">
+        <button @fadeInOut 
+                (click)="editDiary()" 
+                class="items-center justify-center w-10 h-10 rounded-full bg-neutral-200 
+                text-gray-700 shadow-md transition duration-200 hover:text-green-600 hover:bg-green-100 cursor-pointer flex"
+                title="Editar diario">
+            <mat-icon class="material-symbols-outlined">edit_document</mat-icon>
+        </button>
+        <button @fadeInOut 
+                (click)="deleteDiary()" 
+                class="items-center justify-center w-10 h-10 rounded-full bg-red-500/80
+                text-white shadow-md transition duration-200 hover:bg-red-600 cursor-pointer flex"
+                title="Eliminar diario">
+            <mat-icon class="material-symbols">close</mat-icon>
+        </button>
+    </div>
+</div> 

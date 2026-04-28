@@ -1,0 +1,30 @@
+<!-- Contenedor principal de las recomendaciones visuales -->
+<div class="h-max flex flex-row flex-wrap justify-start items-center gap-3 p-2">
+
+  <!-- Botones de recomendación generados dinámicamente -->
+  @for (recommendation of recommendations; track $index) {
+
+    <button 
+      type="button"
+      (click)="toggleRecommendation(recommendation)"
+      [ngClass]="{
+          'bg-gray-800/70 hover:bg-gray-700/70 text-white/85': isRecommendationSelected(recommendation),
+          'bg-gray-300/55 hover:bg-gray-400/55 text-black/85': !isRecommendationSelected(recommendation)
+      }"
+      class="flex flex-row gap-2 items-center px-4 py-2 rounded-lg shadow-lg cursor-pointer transition-colors"
+    >
+      <!-- Icono representativo de la recomendación -->
+      <span 
+        [ngClass]="{
+            'text-white/85': isRecommendationSelected(recommendation),
+            'text-black/55': !isRecommendationSelected(recommendation)
+        }"
+        class="flex transition-colors"
+      >
+        <mat-icon class="material-symbols-outlined">{{ recommendation.icon }}</mat-icon>
+      </span>
+      <!-- Nombre o etiqueta de la recomendación -->
+      <span class="flex items-center font-semibold">{{ recommendation.label }}</span>
+    </button>
+  }
+</div>

@@ -1,0 +1,41 @@
+<form @fadeInOut [formGroup]="form" class="p-4 sm:p-0 flex flex-col gap-4">
+    <fieldset class="grid grid-cols-1 grid-rows-2 gap-4">
+        <app-input
+            label="Usuario / Email"
+            [formGroup]="form"
+            [formControl]="usernameControl"
+            [value]="user"
+            (valueChange)="user = $event"
+        >
+        </app-input>
+        <app-input
+            label="Contrase&ntilde;a"
+            [type]="InputType.password"
+            [formGroup]="form"
+            [formControl]="passwordControl"
+            [isPassword]="true"
+            [value]="password"
+            (valueChange)="password = $event"
+        >
+        </app-input>
+    </fieldset>
+
+    <div class="grid grid-cols-1 grid-flow-row gap-2">
+        <div class="flex flex-col gap-2">
+            <button 
+                (click)="login()" 
+                [disabled]="isLoading"
+                class="h-12 py-1 px-4 flex items-center justify-center font-semibold bg-emerald-600/75 hover:bg-emerald-700/80 active:bg-emerald-800 text-white rounded-lg transition-all cursor-pointer shadow-lg">
+                @if (!isLoading) {
+                    Iniciar sesi&oacute;n
+                } @else {
+                    <app-spinner></app-spinner>
+                }
+            </button>
+            <app-btn-google />
+        </div>
+        <a routerLink="/auth/registro" class="w-max py-1 px-4 justify-self-center font-semibold hover:text-sky-900 hover:underline transition-all cursor-pointer">
+            ¿No tienes una cuenta? Reg&iacute;strate
+        </a>
+    </div>
+</form>

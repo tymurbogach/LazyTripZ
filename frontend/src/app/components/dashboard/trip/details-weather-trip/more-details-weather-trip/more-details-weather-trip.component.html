@@ -1,0 +1,32 @@
+<div class="h-full bg-[url('../public/globosSunset.jpg')] bg-cover bg-no-repeat bg-center bg-fixed scrollbar-hide">
+    <div class="h-full grid grid-rows-[auto_1fr] bg-white/40">
+        <app-menu-locations-trip [locations]="locations" [tripId]="tripId" [currentLocation]="location">
+        </app-menu-locations-trip>
+        @if (isLoading) {
+        <div class="mx-auto">
+            <app-spinner></app-spinner>
+        </div>
+        }
+        @if(!isLoading){
+        <div class="flex-1 overflow-hidden">
+            <div class="h-full lg:px-10 py-3 flex flex-col md:gap-4 overflow-auto">
+                @for (data of dataLocation; track $index) {
+                <div class="flex flex-col">
+                    <h2 class="px-2 py-1 font-bold text-lg">
+                        {{ data.day | date:'d MMM yyyy' }}
+                    </h2>
+                    <div
+                        class="px-2 py-2 grid grid-cols-1 grid-rows-auto sm:grid-cols-2 sm:grid-rows-auto 2xl:grid-cols-4 gap-4">
+                        @for (forecast of data.weather_forecasts; track $index) {
+                        <app-details-weather-location-hour [time]="forecast.time" [forecast]="forecast.forecast"
+                            [temperature]="forecast.temperature" [chanceOfRain]="forecast.rain_probability">
+                        </app-details-weather-location-hour>
+                        }
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+        }
+    </div>
+</div>

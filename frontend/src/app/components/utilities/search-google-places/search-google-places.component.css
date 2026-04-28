@@ -1,0 +1,220 @@
+/* ── Wrapper ─────────────────────────────────────────────────────────── */
+.place-search-wrapper {
+  position: relative;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+/* ── Fila de input ───────────────────────────────────────────────────── */
+.search-input-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #fffef9;
+  border: 2px solid #d1c4a8;
+  border-radius: 10px;
+  padding: 10px 14px;
+  transition: border-color 200ms, box-shadow 200ms;
+}
+
+.search-input-row:focus-within {
+  border-color: #d97706;
+  box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.15);
+}
+
+.search-input-row.loading {
+  border-color: #f59e0b;
+}
+
+/* ── Icono pin ───────────────────────────────────────────────────────── */
+.pin-icon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  color: #d97706;
+}
+.pin-icon svg { width: 100%; height: 100%; }
+
+/* ── Input ───────────────────────────────────────────────────────────── */
+.search-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 0.92rem;
+  color: #1a1a1a;
+  font-family: inherit;
+}
+
+.search-input::placeholder {
+  color: #b4a48a;
+  font-style: italic;
+}
+
+/* ── Spinner de 3 puntos ─────────────────────────────────────────────── */
+.spinner {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  flex-shrink: 0;
+}
+.spinner span {
+  display: block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #d97706;
+  animation: bounce 1s infinite ease-in-out;
+}
+.spinner span:nth-child(2) { animation-delay: 0.15s; }
+.spinner span:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes bounce {
+  0%, 80%, 100% { transform: scale(0.6); opacity: 0.5; }
+  40%           { transform: scale(1);   opacity: 1;   }
+}
+
+/* ── Botón limpiar ───────────────────────────────────────────────────── */
+.clear-btn {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #e5ddd0;
+  border: none;
+  cursor: pointer;
+  color: #6b5c45;
+  transition: background 150ms;
+}
+.clear-btn:hover { background: #d1c4a8; }
+.clear-btn svg { width: 12px; height: 12px; }
+
+/* ── Dropdown ────────────────────────────────────────────────────────── */
+.results-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background: #fffef9;
+  border: 1.5px solid #d1c4a8;
+  border-radius: 10px;
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.12),
+    0 2px 6px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  z-index: 100;
+  animation: dropIn 180ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes dropIn {
+  from { opacity: 0; transform: translateY(-6px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);    }
+}
+
+/* ── Cabecera del dropdown ───────────────────────────────────────────── */
+.results-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 14px 6px;
+  border-bottom: 1px dashed #e5d9c5;
+}
+
+.results-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #92400e;
+}
+
+.results-source {
+  font-size: 0.65rem;
+  color: #b4a48a;
+  font-style: italic;
+}
+
+/* ── Items de resultado ──────────────────────────────────────────────── */
+.result-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 14px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #f0e8d8;
+  cursor: pointer;
+  text-align: left;
+  transition: background 120ms;
+  font-family: inherit;
+  animation: fadeSlide 200ms ease both;
+}
+
+.result-item:last-child { border-bottom: none; }
+.result-item:hover { background: #fef3c7; }
+.result-item:hover .result-dot { background: #d97706; }
+.result-item:hover .result-arrow { opacity: 1; color: #d97706; }
+
+@keyframes fadeSlide {
+  from { opacity: 0; transform: translateX(-4px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ── Punto de ubicación ──────────────────────────────────────────────── */
+.result-dot {
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #d1c4a8;
+  transition: background 120ms;
+}
+
+/* ── Texto del resultado ─────────────────────────────────────────────── */
+.result-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.result-city {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.result-sub {
+  font-size: 0.75rem;
+  color: #8b7355;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Flecha ──────────────────────────────────────────────────────────── */
+.result-arrow {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  color: #d1c4a8;
+  opacity: 0;
+  transition: opacity 120ms, color 120ms;
+}
+
+/* ── Hint de mínimo caracteres ───────────────────────────────────────── */
+.hint-text {
+  font-size: 0.75rem;
+  color: #b4a48a;
+  font-style: italic;
+  margin-top: 6px;
+  padding-left: 4px;
+}

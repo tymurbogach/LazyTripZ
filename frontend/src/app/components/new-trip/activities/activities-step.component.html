@@ -1,0 +1,57 @@
+<!-- Contenedor del formulario del paso de actividades -->
+<div [formGroup]="parentForm">
+  <div formArrayName="activities">
+
+    <!-- Iteración sobre cada actividad del FormArray -->
+    <div *ngFor="let activity of activitiesFormArray.controls; let i = index" 
+         [formGroupName]="i"
+         class="relative mb-4 border p-4 rounded shadow">
+
+      <!-- Botón para eliminar la actividad actual -->
+      <button type="button"
+              class="absolute top-2 right-2 text-2xl font-bold text-red-600 hover:text-red-800 leading-none"
+              (click)="handleRemove(i)">
+        ×
+      </button>
+
+      <!-- Campo: Descripción de la actividad -->
+      <label class="block mb-1 font-medium">Descripción</label>
+      <input formControlName="description" 
+             class="w-full mb-2 p-2 rounded bg-gray-100" />
+
+      <!-- Campo: Selección de localidad donde se realizará la actividad -->
+      <label class="block mb-1 font-medium">Localidad</label>
+      <select formControlName="locality" 
+              class="w-full mb-2 p-2 rounded bg-gray-100">
+        <option [ngValue]="''">-- Selecciona un destino --</option>
+        <option *ngFor="let loc of uniqueAvailableLocations; trackBy: trackByLocality" 
+                [ngValue]="loc.locality.trim()">
+          {{ loc.locality }}
+        </option>
+      </select>
+
+      <!-- Campo: Fecha de la actividad, limitada por el rango de fechas del destino -->
+      <label class="block mb-1 font-medium">Fecha</label>
+      <input type="date"
+             formControlName="day"
+             class="w-full mb-2 p-2 rounded bg-gray-100"
+             [min]="getMinDateForLocality(activity.value.locality)"
+             [max]="getMaxDateForLocality(activity.value.locality)" />
+
+      <!-- Campo: Hora del día en la que se realizará la actividad -->
+      <label class="block mb-1 font-medium">Hora del día</label>
+      <select formControlName="time_of_day" 
+              class="w-full mb-2 p-2 rounded bg-gray-100">
+        <option value="">-- Selecciona --</option>
+        <option value="morning">Mañana</option>
+        <option value="afternoon">Tarde</option>
+        <option value="evening">Noche</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Botón para añadir una nueva actividad -->
+  <button type="button" class="text-blue-500 mt-2" (click)="onAddActivity()">
+    + Añadir actividad
+  </button>
+</div>
