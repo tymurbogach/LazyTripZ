@@ -23,26 +23,58 @@
                     (deleteEvent)="deleteEvent.emit()"></app-options-trip>
 
         @if (isLoading) {
+        <!-- Spinner cargando recomendaciones iniciales -->
         <div @fadeInOut class="flex absolute top-16 right-16">
           <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600"></div>
         </div>
+        } @else if (isGeneratingRecs) {
+        <!-- Spinner generando con IA -->
+        <div @fadeInOut class="flex absolute top-16 right-16 flex-col items-center gap-0.5">
+          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500"></div>
+          <span class="text-[9px] text-amber-700 font-semibold">IA...</span>
+        </div>
         } @else {
-        @if (hasRecommendations()) {
-        <div @fadeInOut class="flex absolute top-16 right-16">
-          <button class="w-10 h-10 flex justify-center items-center p-2 bg-emerald-600/75 hover:bg-emerald-700/80 active:bg-emerald-800 text-white rounded-full 
-            transition-all cursor-pointer shadow-lg shadow-neutral-500/50 duration-200 hover:scale-105"
-            [routerLink]="['/recommendations', trip.id, trip.name]">
+        <!-- Botón recomendaciones: verde=ver / gris=generar -->
+        <div @fadeInOut class="flex absolute top-16 right-28">
+          @if (hasRecommendations()) {
+          <button
+            class="w-10 h-10 flex justify-center items-center p-2 bg-emerald-600/75 hover:bg-emerald-700/80 text-white rounded-full transition-all cursor-pointer shadow-lg shadow-neutral-500/50 duration-200 hover:scale-105"
+            title="Ver recomendaciones"
+            [routerLink]="['/recommendations', trip.id, trip.name]"
+          >
             <mat-icon class="material-symbols">recommend</mat-icon>
           </button>
+          } @else {
+          <button
+            class="w-10 h-10 flex justify-center items-center p-2 bg-gray-400/75 hover:bg-gray-500/80 text-white rounded-full transition-all cursor-pointer shadow-lg shadow-neutral-500/50 duration-200 hover:scale-105"
+            title="Generar recomendaciones con IA"
+            (click)="generateRecommendations()"
+          >
+            <mat-icon class="material-symbols">auto_awesome</mat-icon>
+          </button>
+          }
         </div>
-        }
-        <div @fadeInOut class="flex absolute top-16 right-4">
-          <button class="w-10 h-10 flex justify-center items-center p-2 bg-sky-600/75 hover:bg-sky-700/80 active:bg-sky-800 text-white rounded-full 
+        <!-- Botón actividades (azul) -->
+        <div @fadeInOut class="flex absolute top-16 right-16">
+          <button class="w-10 h-10 flex justify-center items-center p-2 bg-sky-600/75 hover:bg-sky-700/80 active:bg-sky-800 text-white rounded-full
             transition-all cursor-pointer shadow-lg shadow-neutral-500/50 duration-200 hover:scale-105"
+            title="Actividades"
             (click)="toggleActivities()">
             <mat-icon class="material-symbols">event_note</mat-icon>
           </button>
         </div>
+        <!-- Botón reload recs (ámbar) — solo cuando ya hay recomendaciones -->
+        @if (hasRecommendations()) {
+        <div @fadeInOut class="flex absolute top-16 right-4">
+          <button
+            class="w-10 h-10 flex justify-center items-center p-2 bg-amber-500/75 hover:bg-amber-600/80 text-white rounded-full transition-all cursor-pointer shadow-lg shadow-neutral-500/50 duration-200 hover:scale-105"
+            title="Recargar recomendaciones"
+            (click)="reloadRecommendations()"
+          >
+            <mat-icon class="material-symbols">sync</mat-icon>
+          </button>
+        </div>
+        }
         }
       </div>
 

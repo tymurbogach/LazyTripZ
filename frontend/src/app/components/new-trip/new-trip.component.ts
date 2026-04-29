@@ -446,16 +446,17 @@ export class NewTripComponent implements OnInit {
 
           /**
            * Genera el pronóstico del clima para las localizaciones.
+           * Actividades también dependen de locationReq: el controller busca Location
+           * por nombre en BD y necesita que las locations ya estén guardadas.
            */
           const weatherReq = locationReq.then(() =>
             this.tripService.generateWeatherForecastsTrip(tripId).toPromise()
           );
 
-          /**
-           * Registra las actividades si existen.
-           */
           const activitiesReq = activities.length > 0
-            ? this.tripService.addActivitiesTrip(tripId, { activities }).toPromise()
+            ? locationReq.then(() =>
+                this.tripService.addActivitiesTrip(tripId, { activities }).toPromise()
+              )
             : Promise.resolve();
 
           /**

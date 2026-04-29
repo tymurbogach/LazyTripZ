@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, ChangeDetectorRef } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, OnDestroy, Output, ChangeDetectorRef } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { NgClass, CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -6,9 +6,11 @@ import { DetailsWeatherTripComponent } from './details-weather-trip/details-weat
 import { Trip, Activity } from '../../../interfaces/response.interface';
 import { OptionsTripComponent } from './options-trip/options-trip.component';
 import { TripService } from '../../../services/trip.service';
+import { RecommendationService } from '../../../services/recommendation.service';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faDog, faCat } from '@fortawesome/free-solid-svg-icons';
+import { forkJoin, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-trip',
@@ -21,8 +23,6 @@ import { faDog, faCat } from '@fortawesome/free-solid-svg-icons';
     FontAwesomeModule,
     DetailsWeatherTripComponent,
     OptionsTripComponent,
-    CommonModule,
-    OptionsTripComponent
   ],
   templateUrl: './trip.component.html',
   styleUrl: './trip.component.css',
@@ -39,7 +39,7 @@ import { faDog, faCat } from '@fortawesome/free-solid-svg-icons';
     ]),
   ]
 })
-export class TripComponent implements OnInit {
+export class TripComponent implements OnInit, OnDestroy {
   @Input() trip!: Trip;
 
   @Output() deleteEvent = new EventEmitter<void>();
@@ -47,6 +47,7 @@ export class TripComponent implements OnInit {
   @Output() refreshEvent = new EventEmitter<void>();
 
   public isLoading: boolean = false;
+  public isGeneratingRecs: boolean = false;
   public expand: boolean = false;
   public showActivities: boolean = false;
 
@@ -66,9 +67,11 @@ export class TripComponent implements OnInit {
 
   private recommendationsLoaded = false;
   private petRecommendationsLoaded = false;
+  private pollTimer: any = null;
 
   constructor(
     private tripService: TripService,
+    private recommendationService: RecommendationService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -83,6 +86,10 @@ export class TripComponent implements OnInit {
     this.loadRecommendations();
   }
 
+  ngOnDestroy() {
+    if (this.pollTimer) clearInterval(this.pollTimer);
+  }
+
   loadActivities() {
     this.tripService.getActivitiesTrip(this.trip.id).subscribe({
       next: (response) => {
@@ -90,9 +97,7 @@ export class TripComponent implements OnInit {
         this.tripWithActivities.activities = response;
         this.cdr.detectChanges();
       },
-      error: (err) => {
-        console.error('Error cargando actividades:', err);
-      }
+      error: (err) => console.error('Error cargando actividades:', err)
     });
   }
 
@@ -102,9 +107,7 @@ export class TripComponent implements OnInit {
         this.pets = response;
         this.cdr.detectChanges();
       },
-      error: (err) => {
-        console.error('Error cargando mascotas:', err);
-      }
+      error: (err) => console.error('Error cargando mascotas:', err)
     });
   }
 
@@ -112,15 +115,18 @@ export class TripComponent implements OnInit {
     this.isLoading = true;
     this.recommendationsLoaded = false;
     this.petRecommendationsLoaded = false;
+    console.group(`[Trip ${this.trip.id}] loadRecommendations`);
 
     this.tripService.getRecommendationsTrip(this.trip.id).subscribe({
       next: (response) => {
-        this.recommendations = response.data;
+        this.recommendations = response.data ?? [];
+        console.log('recs:', this.recommendations?.length, response.success ? 'ok' : response.message);
         this.recommendationsLoaded = true;
         this.checkLoading();
         this.cdr.detectChanges();
       },
-      error: () => {
+      error: (err) => {
+        console.warn('recs error:', err.status, err.error?.message);
         this.recommendationsLoaded = true;
         this.checkLoading();
       }
@@ -128,16 +134,99 @@ export class TripComponent implements OnInit {
 
     this.tripService.getPetRecommendationsTrip(this.trip.id).subscribe({
       next: (response) => {
-        this.pet_recommendations = response.data;
+        this.pet_recommendations = response.data ?? [];
+        console.log('pet recs:', this.pet_recommendations?.length, response.success ? 'ok' : response.message);
         this.petRecommendationsLoaded = true;
         this.checkLoading();
         this.cdr.detectChanges();
       },
-      error: () => {
+      error: (err) => {
+        console.warn('pet recs error:', err.status, err.error?.message);
         this.petRecommendationsLoaded = true;
         this.checkLoading();
       }
     });
+
+    console.groupEnd();
+  }
+
+  // Genera recomendaciones con todos los tipos disponibles y hace polling hasta que lleguen
+  generateRecommendations() {
+    if (this.isGeneratingRecs) return;
+    this.isGeneratingRecs = true;
+    console.log(`[Trip ${this.trip.id}] Generating recommendations...`);
+
+    this.recommendationService.getRecommendationTypes().subscribe({
+      next: (response) => {
+        const allTypes: any[] = response.data ?? [];
+        const generalTypes = allTypes.filter((t: any) => t.category !== 'mascotas');
+        const petTypes = allTypes.filter((t: any) => t.category === 'mascotas');
+        const hasPets = this.pets.length > 0;
+
+        const calls: any[] = [];
+
+        if (generalTypes.length > 0) {
+          calls.push(this.tripService.generateRecommendations(this.trip.id, {
+            recommendations_types: generalTypes.map((t: any) => ({ name: t.name }))
+          }));
+        }
+
+        if (hasPets && petTypes.length > 0) {
+          calls.push(this.tripService.generatePetRecommendations(this.trip.id, {
+            recommendations_types: petTypes.map((t: any) => ({ name: t.name }))
+          }));
+        }
+
+        if (calls.length === 0) {
+          this.isGeneratingRecs = false;
+          return;
+        }
+
+        forkJoin(calls).subscribe({
+          next: () => {
+            console.log(`[Trip ${this.trip.id}] Jobs dispatched, polling for results...`);
+            this.startPollingRecommendations();
+          },
+          error: (err) => {
+            console.error('Error dispatching recommendation jobs:', err);
+            this.isGeneratingRecs = false;
+            this.cdr.detectChanges();
+          }
+        });
+      },
+      error: (err) => {
+        console.error('Error fetching recommendation types:', err);
+        this.isGeneratingRecs = false;
+      }
+    });
+  }
+
+  private startPollingRecommendations() {
+    if (this.pollTimer) clearInterval(this.pollTimer);
+    let attempts = 0;
+    const maxAttempts = 12; // 12 × 5s = 60 segundos máximo
+
+    this.pollTimer = setInterval(() => {
+      attempts++;
+      this.tripService.getRecommendationsTrip(this.trip.id).subscribe({
+        next: (response) => {
+          const recs = response.data ?? [];
+          if (recs.length > 0 || attempts >= maxAttempts) {
+            clearInterval(this.pollTimer);
+            this.pollTimer = null;
+            this.isGeneratingRecs = false;
+            this.loadRecommendations();
+          }
+        },
+        error: () => {
+          if (attempts >= maxAttempts) {
+            clearInterval(this.pollTimer);
+            this.pollTimer = null;
+            this.isGeneratingRecs = false;
+          }
+        }
+      });
+    }, 5000);
   }
 
   private checkLoading() {
@@ -155,10 +244,7 @@ export class TripComponent implements OnInit {
     this.startDate = new Date(Math.min(...startDates.map(d => d.getTime())));
     this.endDate = new Date(Math.max(...endDates.map(d => d.getTime())));
 
-    return {
-      start: this.startDate,
-      end: this.endDate
-    };
+    return { start: this.startDate, end: this.endDate };
   }
 
   private buildTransportPresenceMap() {
@@ -190,16 +276,27 @@ export class TripComponent implements OnInit {
   }
 
   onWeatherRefresh() {
-    if (this.trip?.id) {
-      this.tripService.getTripById(this.trip.id).subscribe({
-        next: (trip) => {
-          this.trip.last_weather_sync_at = trip.last_weather_sync_at;
-          this.refreshEvent.emit();
-        },
-        error: (error) => {
-          console.error('Error refreshing weather:', error);
+    if (!this.trip?.id) return;
+    const tripId = this.trip.id;
+    // Recargar viajes para obtener el mismo formato de weather que el dashboard inicial
+    this.tripService.getTrips().subscribe({
+      next: (trips) => {
+        const updated = trips.find(t => t.id === tripId);
+        if (updated) {
+          this.trip.locations = updated.locations;
+          this.trip.last_weather_sync_at = updated.last_weather_sync_at;
+          this.cdr.detectChanges();
         }
-      });
+      },
+      error: (err) => console.error('Error actualizando clima:', err)
+    });
+  }
+
+  reloadRecommendations() {
+    if (this.hasRecommendations()) {
+      this.loadRecommendations();
+    } else {
+      this.generateRecommendations();
     }
   }
 }

@@ -34,13 +34,11 @@ class GeneratePetRecommendationsJob implements ShouldQueue
         try {
             $type_model = RecommendationType::where('name', $this->type)->first();
             if (!$type_model) {
-                Log::error("Recommendation type {$this->type} not found.");
+                Log::error("Recommendation type '{$this->type}' not found in DB.");
                 return;
             }
-            $recommendations = $service->generatePetRecommendationsForEachPet($this->locations, $this->type, $this->pets);
+            $recommendations = $service->generatePetRecommendationsForEachPet($this->locations, $type_model, $this->pets);
 
-            $type_model = RecommendationType::where('name', $this->type)->first();
-           
             foreach ($recommendations as $recommendation) {
                 foreach ($recommendation['pet_id'] as $pet_id) {
                     PetRecommendation::create([

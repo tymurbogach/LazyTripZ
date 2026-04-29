@@ -36,9 +36,13 @@ class GenerateRecommendationsJob implements ShouldQueue
     public function handle(RecommendationService $service): void
     {
         try {
-            $recommendations = $service->generateRecommendations($this->locations, $this->type);
-
             $type_model = RecommendationType::where('name', $this->type)->first();
+            if (!$type_model) {
+                Log::error("Recommendation type '{$this->type}' not found in DB.");
+                return;
+            }
+
+            $recommendations = $service->generateRecommendations($this->locations, $type_model);
 
             foreach ($recommendations as $item) {
                 Recommendation::create([

@@ -7,148 +7,139 @@ use Illuminate\Support\Facades\Log;
 
 class RecommendationService
 {
-    private function callGemini(string $prompt)
+    private function callGemini(string $prompt, array $responseSchema)
     {
         $apiKey = config('services.gemini.key');
-        $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={$apiKey}";
+        $model  = config('services.gemini.model', 'gemini-2.5-flash');
+        $url    = "https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key={$apiKey}";
 
         $response = Http::post($url, [
             'systemInstruction' => [
-                'parts' => [['text' => 'Eres una IA que responde solo con JSON sin explicación. No escribas nada fuera del bloque JSON.']],
+                'parts' => [['text' => 'Eres un asistente de viajes. Responde SIEMPRE con JSON puro siguiendo el schema indicado. Nunca añadas texto fuera del JSON.']],
             ],
             'contents' => [
                 ['parts' => [['text' => $prompt]]],
             ],
-            'generationConfig' => ['temperature' => 0.7],
+            'generationConfig' => [
+                'temperature'      => 0.7,
+                'responseMimeType' => 'application/json',
+                'responseSchema'   => $responseSchema,
+            ],
         ]);
 
         if ($response->failed()) {
-            Log::error('Gemini API error', [
-                'status' => $response->status(),
+            $status = $response->status();
+            Log::error("Gemini API error [{$status}]", [
+                'status' => $status,
                 'body'   => $response->body(),
             ]);
+            if ($status === 429) {
+                throw new \RuntimeException("Gemini quota exceeded (429). Job will retry.");
+            }
             return [];
         }
 
         $content = $response['candidates'][0]['content']['parts'][0]['text'] ?? '';
-
-        // Eliminar bloques de código markdown que Gemini puede añadir
-        $content = str_replace(['```json', '```'], '', $content);
-        $content = trim($content);
+        $content = trim(str_replace(['```json', '```'], '', $content));
 
         $json = json_decode($content, true);
 
         if (!is_array($json)) {
-            Log::error('Respuesta de Gemini no es un array JSON válido', [
-                'original_content' => $content,
-            ]);
+            Log::error('Respuesta de Gemini no es JSON válido', ['content' => $content]);
             return [];
         }
 
-        // Normalizar a array numérico
-        if (array_keys($json) === range(0, count($json) - 1)) {
-            return $json;
-        }
-        return [$json];
+        // Normalizar: si ya es array indexado lo devolvemos tal cual, si no lo envolvemos
+        return array_is_list($json) ? $json : [$json];
     }
 
-    // Funciones para recomendaciones generales
-    private function generateTextType($type_model) 
-    {
-        $template = $type_model->prompt_template ?? 'Quiero recibir 2 recomendaciones útiles en cada destino sobre {$type}.';
-        
-        return strtr($template, [
-            '{$type}' => $type_model
-        ]);
-    }
+    // ── Recomendaciones generales ─────────────────────────────────────────
 
-    public function generateRecommendations(array $locations, $type_model)
+    public function generateRecommendations(array $locations, $type_model): array
     {
-        $detail_trip = collect($locations)->map(function ($location) {
-            return "- Estaré en {$location['name']} del {$location['start_date']} al {$location['end_date']}.";
-        })->implode("\n");
+        $detail_trip = collect($locations)->map(fn($l) =>
+            "- Estaré en {$l['name']} del {$l['start_date']} al {$l['end_date']}."
+        )->implode("\n");
 
-        $type_prompt = $this->generateTextType($type_model);
+        $type_prompt = $type_model->prompt_template
+            ?? 'Dame 2 recomendaciones útiles para cada destino.';
 
         $prompt = <<<PROMPT
-        Estoy planeando un viaje. Aquí están las ubicaciones y fechas:
-
+        Estoy planeando un viaje. Ubicaciones y fechas:
         $detail_trip
 
-        $type_prompt
+        Tarea: $type_prompt
 
-        Responde con un JSON válido. No incluyas ```json ni formato de bloque de código. Solo responde con el JSON puro.
-
-        El formato que quiero es estrictamente este. Si no hay recomendaciones, devuelve un array vacío:
-
-        [
-            {
-                "recomendacion": "Texto de la recomendación",
-                "motivo": "Motivo por el cual se recomienda esa actividad"
-            }
-        ]
+        Proporciona entre 2 y 4 recomendaciones concretas y útiles.
         PROMPT;
 
-        return $this->callGemini($prompt);
+        $schema = [
+            'type'  => 'array',
+            'items' => [
+                'type'       => 'object',
+                'properties' => [
+                    'recomendacion' => ['type' => 'string', 'description' => 'Recomendación concreta'],
+                    'motivo'        => ['type' => 'string', 'description' => 'Por qué es útil'],
+                ],
+                'required' => ['recomendacion', 'motivo'],
+            ],
+        ];
+
+        return $this->callGemini($prompt, $schema);
     }
 
-    // Funciones para recomendaciones de mascotas
-    private function generateTextPetType($type_model, $pets) 
+    // ── Recomendaciones de mascotas ───────────────────────────────────────
+
+    public function generatePetRecommendationsForEachPet(array $locations, $type_model, array $pets): array
     {
-        $template = $type_model->prompt_template ?? 'Quiero recibir 2 recomendaciones útiles en cada destino sobre {$type} adecuadas para viajar con {$pets_text}.';
+        $details_trip = collect($locations)->map(fn($l) =>
+            "- Estaré en {$l['name']} del {$l['start_date']} al {$l['end_date']}."
+        )->implode("\n");
 
-        $pets_text = $pets ? collect($pets)->pluck('type')->implode('y ') : '';
-        if (empty($pets_text)) {
-            $pets_text = 'mascotas';
-        }
-        return strtr($template, [
-            '{$type}' => $type_model,
-            '{$pets}' => $pets_text 
-        ]);
-    }
+        $details_pets = collect($pets)->map(fn($p) =>
+            "- Mascota tipo '{$p['type']}' con ID {$p['id']}"
+        )->implode("\n");
 
-    public function generatePetRecommendationsForEachPet(array $locations, $type_model, array $pets)
-    {
-        $details_trip = collect($locations)->map(function ($location) {
-            return "- Estaré en {$location['name']} del {$location['start_date']} al {$location['end_date']}.";
-        })->implode("\n");
+        $pets_text = collect($pets)->pluck('type')->implode(' y ') ?: 'mascotas';
 
-        $details_pets = collect($pets)->map(function ($pet) {
-            return "- La mascota {$pet['type']} tiene el ID ({$pet['id']})";
-        })->implode("\n");
+        $type_prompt = strtr(
+            $type_model->prompt_template ?? 'Dame 2 recomendaciones sobre {$type} para viajar con {$pets}.',
+            ['{$type}' => $type_model->label, '{$pets}' => $pets_text]
+        );
 
-        $type_prompt = $this->generateTextPetType($type_model, $pets);
+        $pet_ids = collect($pets)->pluck('id')->implode(', ');
 
         $prompt = <<<PROMPT
-
-        Estoy planeando un viaje con mis mascotas. Aquí están las ubicaciones y fechas:
+        Estoy planeando un viaje con mis mascotas. Ubicaciones y fechas:
         $details_trip
 
-        Aquí están las mascotas que viajan conmigo y sus IDs:
+        Mascotas (con sus IDs):
         $details_pets
 
-        $type_prompt
+        Tarea: $type_prompt
 
-        Necesito exactamente **dos recomendaciones por mascota**.
-
-        Si una recomendación sirve para más de una mascota, en pet_id se pone un array con los IDs de las mascotas (respetando el formato y cambiando el `pet_id`).
-        
-        Si una recomendación es individual para una sola mascota, asígnala únicamente a ella.
-
-        Responde con un JSON válido. No incluyas ```json ni formato de bloque de código. Solo responde con el JSON puro.
-
-        El formato que quiero es estrictamente este. Si no hay recomendaciones, devuelve un array vacío:
-
-        [
-            {
-                "pet_id": ["ID de la mascota", "ID de la mascota si es para varias"],
-                "recomendacion": "Texto de la recomendación",
-                "motivo": "Motivo por el cual se recomienda esa actividad"
-            }
-        ]
-
+        IDs de mascotas disponibles: $pet_ids
+        Da exactamente 2 recomendaciones por mascota.
+        Si una recomendación aplica a varias mascotas, incluye todos sus IDs en pet_id.
         PROMPT;
 
-        return $this->callGemini($prompt);
+        $schema = [
+            'type'  => 'array',
+            'items' => [
+                'type'       => 'object',
+                'properties' => [
+                    'pet_id'        => [
+                        'type'  => 'array',
+                        'items' => ['type' => 'integer'],
+                        'description' => 'IDs de las mascotas a las que aplica',
+                    ],
+                    'recomendacion' => ['type' => 'string'],
+                    'motivo'        => ['type' => 'string'],
+                ],
+                'required' => ['pet_id', 'recomendacion', 'motivo'],
+            ],
+        ];
+
+        return $this->callGemini($prompt, $schema);
     }
 }

@@ -4,7 +4,7 @@ import { TripService } from '../../services/trip.service';
 import { DialogService } from '../../services/dialog.service';
 import { Trip } from '../../interfaces/response.interface';
 import { TripComponent } from './trip/trip.component';
-import { debounceTime, distinctUntilChanged, finalize } from 'rxjs';
+import { finalize } from 'rxjs';
 import { SpinnerComponent } from "../utilities/spinner/spinner.component";
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
@@ -39,14 +39,10 @@ export class DashboardComponent implements OnInit {
 
   getTrips(): void {
     this.isLoading = true;
-    this.trips = []; 
+    // No limpiar this.trips antes de cargar — evita destruir TripComponents y perder estado local
     this.tripService
       .getTrips()
-      .pipe(
-        debounceTime(0), 
-        distinctUntilChanged(),
-        finalize(() => this.isLoading = false)
-      )
+      .pipe(finalize(() => this.isLoading = false))
       .subscribe({
         next: (trips) => {
           this.trips = trips;
