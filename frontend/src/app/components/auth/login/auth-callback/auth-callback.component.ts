@@ -18,7 +18,7 @@ export class AuthCallbackComponent implements OnInit {
 
   ngOnInit() {
     // Leer token desde cookie (con withCredentials para enviar cookies)
-    this.http.get<{ data: string }>('http://localhost:8000/api/auth/token-from-cookie', {
+    this.http.get<{ data: string }>('/api/auth/token-from-cookie', {
       withCredentials: true
     }).subscribe({
       next: (response) => {

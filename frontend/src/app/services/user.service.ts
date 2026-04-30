@@ -7,7 +7,7 @@ import { Response } from '../interfaces/response.interface';
   providedIn: 'root'
 })
 export class UserService {
-  private serverUrl: string = 'http://localhost:8000';
+  private serverUrl: string = '';
 
   constructor(
     private http: HttpClient,

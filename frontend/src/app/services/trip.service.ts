@@ -7,7 +7,7 @@ import { Activity, Pet, Response, Trip, WeatherForecastDay, TripLocation, TripCr
   providedIn: 'root'
 })
 export class TripService {
-  private serverUrl: string = 'http://localhost:8000';
+  private serverUrl: string = '';
 
   constructor(private http: HttpClient) {}
 
