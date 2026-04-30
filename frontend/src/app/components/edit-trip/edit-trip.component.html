@@ -5,7 +5,7 @@
       <h1 class="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 mb-2">Editar Viaje</h1>
       <div class="w-full max-w-xs sm:max-w-sm md:max-w-md mx-auto bg-gray-200 rounded-full h-1.5 sm:h-2 md:h-2.5">
         <div class="bg-blue-600 h-full rounded-full transition-all duration-500"
-            [style.width]="((currentStep + 1) / TOTAL_STEPS * 100) + '%'">
+          [style.width]="((currentStep + 1) / TOTAL_STEPS * 100) + '%'">
         </div>
       </div>
     </div>
@@ -13,88 +13,92 @@
     <!-- Contenido principal -->
     <div class="bg-white p-2 sm:p-4 md:p-6 lg:p-8 flex-1 flex flex-col overflow-hidden">
       <!-- Muestra el spinner mientras se cargan los datos -->
-      <ng-container *ngIf="isLoading; else content">
+      @if (isLoading) {
         <div class="w-full h-32 sm:h-40 flex justify-center items-center">
           <app-spinner></app-spinner>
         </div>
-      </ng-container>
-
-      <ng-template #content>
+      } @else {
         <form [formGroup]="tripForm" (ngSubmit)="onSave()"
           class="space-y-1 sm:space-y-6 flex-1 flex flex-col overflow-hidden">
           <!-- Paso 0: Datos generales del viaje -->
-          <div *ngIf="currentStep === 0" class="animate-fadeIn flex-1">
-            <div class="h-full overflow-y-auto pr-2 scrollbar-hide">
-              <app-trip-step [parentForm]="tripForm" [transportOptions]="transportOptions" [petOptions]="petOptions">
-              </app-trip-step>
+          @if (currentStep === 0) {
+            <div class="animate-fadeIn flex-1">
+              <div class="h-full overflow-y-auto pr-2 scrollbar-hide">
+                <app-trip-step [parentForm]="tripForm" [transportOptions]="transportOptions" [petOptions]="petOptions">
+                </app-trip-step>
+              </div>
             </div>
-          </div>
-
+          }
           <!-- Paso 1: Lista de destinos del viaje -->
-          <div *ngIf="currentStep === 1" class="animate-fadeIn flex-1">
-            <div class="h-full pr-2 scrollbar-hide">
-              <app-locations-step [locationsFormArray]="locations" [onAddLocation]="onAddLocation"
-                [onRemoveLocation]="onRemoveLocation">
-              </app-locations-step>
+          @if (currentStep === 1) {
+            <div class="animate-fadeIn flex-1">
+              <div class="h-full pr-2 scrollbar-hide">
+                <app-locations-step [locationsFormArray]="locations" [onAddLocation]="onAddLocation"
+                  [onRemoveLocation]="onRemoveLocation">
+                </app-locations-step>
+              </div>
             </div>
-          </div>
-
+          }
           <!-- Paso 2: Lista de actividades planificadas -->
-          <div *ngIf="currentStep === 2" class="animate-fadeIn flex-1">
-            <div class="h-full overflow-y-auto pr-2 scrollbar-hide">
-              <app-activities-step [parentForm]="tripForm" [onAddActivity]="onAddActivity"
-                [onRemoveActivity]="onRemoveActivity" [availableLocations]="locations.value">
-              </app-activities-step>
-
-              <!-- Mensaje de advertencia si hay actividades incompletas -->
-              <div *ngIf="hasIncompleteActivities()" class="text-red-600 text-sm mt-2">
-                Debes rellenar la localidad y la fecha de todas las actividades para poder continuar.
+          @if (currentStep === 2) {
+            <div class="animate-fadeIn flex-1">
+              <div class="h-full overflow-y-auto pr-2 scrollbar-hide">
+                <app-activities-step [parentForm]="tripForm" [onAddActivity]="onAddActivity"
+                  [onRemoveActivity]="onRemoveActivity" [availableLocations]="locations.value">
+                </app-activities-step>
+                <!-- Mensaje de advertencia si hay actividades incompletas -->
+                @if (hasIncompleteActivities()) {
+                  <div class="text-red-600 text-sm mt-2">
+                    Debes rellenar la localidad y la fecha de todas las actividades para poder continuar.
+                  </div>
+                }
               </div>
             </div>
-          </div>
-
+          }
           <!-- Paso 3: Selección de recomendaciones -->
-          <div *ngIf="currentStep === 3" class="animate-fadeIn flex-1">
-            <div class="h-full overflow-y-auto pr-2 scrollbar-hide">
-              <h2 class="text-lg sm:text-xl md:text-2xl font-semibold text-center text-gray-800 mb-4 sm:mb-6">
-                ¿Qué tipo de recomendaciones te gustaría recibir?
-              </h2>
-
-              <div class="grid gap-4 sm:gap-6">
-                <!-- Recomendaciones generales -->
-                <div class="bg-gray-50 rounded-lg sm:rounded-xl p-3 sm:p-4 md:p-6 hover:shadow-md transition-shadow duration-300">
-                  <h3 class="text-base sm:text-lg md:text-xl font-medium text-gray-800 mb-3 sm:mb-4 text-center">
+          @if (currentStep === 3) {
+            <div class="animate-fadeIn flex-1">
+              <div class="h-full overflow-y-auto pr-2 scrollbar-hide">
+                <h2 class="text-lg sm:text-xl md:text-2xl font-semibold text-center text-gray-800 mb-4 sm:mb-6">
+                  ¿Qué tipo de recomendaciones te gustaría recibir?
+                </h2>
+                <div class="grid gap-4 sm:gap-6">
+                  <!-- Recomendaciones generales -->
+                  <div class="bg-gray-50 rounded-lg sm:rounded-xl p-3 sm:p-4 md:p-6 hover:shadow-md transition-shadow duration-300">
+                    <h3 class="text-base sm:text-lg md:text-xl font-medium text-gray-800 mb-3 sm:mb-4 text-center">
                     Recomendaciones Generales</h3>
-                  <app-choose-recommendations [recommendations]="otherRecommendationsTypes"
-                    [selected]="selectedOtherRecommendations" (selectedChange)="selectedOtherRecommendations = $event">
-                  </app-choose-recommendations>
-                </div>
-
-                <!-- Recomendaciones específicas de mascotas -->
-                <div *ngIf="hasPets()"
-                  class="bg-gray-50 rounded-lg sm:rounded-xl p-3 sm:p-4 md:p-6 hover:shadow-md transition-shadow duration-300">
-                  <h3 class="text-base sm:text-lg md:text-xl font-medium text-gray-800 mb-3 sm:mb-4 text-center">
-                    Recomendaciones para Mascotas</h3>
-                  <app-choose-recommendations [recommendations]="petRecommendationsTypes"
-                    [selected]="selectedPetRecommendations" (selectedChange)="selectedPetRecommendations = $event">
-                  </app-choose-recommendations>
+                    <app-choose-recommendations [recommendations]="otherRecommendationsTypes"
+                      [selected]="selectedOtherRecommendations" (selectedChange)="selectedOtherRecommendations = $event">
+                    </app-choose-recommendations>
+                  </div>
+                  <!-- Recomendaciones específicas de mascotas -->
+                  @if (hasPets()) {
+                    <div
+                      class="bg-gray-50 rounded-lg sm:rounded-xl p-3 sm:p-4 md:p-6 hover:shadow-md transition-shadow duration-300">
+                      <h3 class="text-base sm:text-lg md:text-xl font-medium text-gray-800 mb-3 sm:mb-4 text-center">
+                      Recomendaciones para Mascotas</h3>
+                      <app-choose-recommendations [recommendations]="petRecommendationsTypes"
+                        [selected]="selectedPetRecommendations" (selectedChange)="selectedPetRecommendations = $event">
+                      </app-choose-recommendations>
+                    </div>
+                  }
                 </div>
               </div>
             </div>
-          </div>
-
+          }
           <!-- Mensaje de error -->
-          <div *ngIf="errorMessage" class="bg-red-50 border-l-4 border-red-500 p-3 sm:p-4 rounded-lg">
-            <div class="flex">
-              <div class="flex-shrink-0">
-                <mat-icon class="text-red-500">error</mat-icon>
-              </div>
-              <div class="ml-3">
-                <p class="text-sm text-red-700">{{ errorMessage }}</p>
+          @if (errorMessage) {
+            <div class="bg-red-50 border-l-4 border-red-500 p-3 sm:p-4 rounded-lg">
+              <div class="flex">
+                <div class="flex-shrink-0">
+                  <mat-icon class="text-red-500">error</mat-icon>
+                </div>
+                <div class="ml-3">
+                  <p class="text-sm text-red-700">{{ errorMessage }}</p>
+                </div>
               </div>
             </div>
-          </div>
-
+          }
           <!-- Botones de navegación -->
           <div
             class="flex flex-col sm:flex-row justify-end gap-3 sm:gap-4 mt-4 sm:mt-6 md:mt-8 pt-3 sm:pt-4 md:pt-6 border-t sticky bottom-0 bg-white">
@@ -104,29 +108,35 @@
                 <mat-icon class="text-lg sm:text-xl">close</mat-icon>
                 Cancelar
               </button>
-
-              <button *ngIf="currentStep > 0" type="button" (click)="goToPrevStep()"
-                class="w-full sm:w-auto bg-gray-500 text-white hover:bg-gray-600 transition-colors duration-300 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg flex items-center justify-center gap-2 text-sm sm:text-base">
-                <mat-icon class="text-lg sm:text-xl">arrow_back</mat-icon>
-                Anterior
-              </button>
-
-              <button *ngIf="currentStep < TOTAL_STEPS - 1" type="button" (click)="goToNextStep()"
-                [disabled]="!isCurrentStepValid()"
-                class="w-full sm:w-auto bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-300 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg flex items-center justify-center gap-2 text-sm sm:text-base">
-                Siguiente
-                <mat-icon class="text-lg sm:text-xl">arrow_forward</mat-icon>
-              </button>
-
-              <button *ngIf="currentStep === TOTAL_STEPS - 1" type="submit" [disabled]="tripForm.invalid || isLoading"
-                class="w-full sm:w-auto bg-green-600 text-white hover:bg-green-700 transition-colors duration-300 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg flex items-center justify-center gap-2 text-sm sm:text-base">
-                <mat-spinner *ngIf="isLoading" diameter="20" class="mr-2"></mat-spinner>
-                Guardar Cambios
-              </button>
+              @if (currentStep > 0) {
+                <button type="button" (click)="goToPrevStep()"
+                  class="w-full sm:w-auto bg-gray-500 text-white hover:bg-gray-600 transition-colors duration-300 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg flex items-center justify-center gap-2 text-sm sm:text-base">
+                  <mat-icon class="text-lg sm:text-xl">arrow_back</mat-icon>
+                  Anterior
+                </button>
+              }
+              @if (currentStep < TOTAL_STEPS - 1) {
+                <button type="button" (click)="goToNextStep()"
+                  [disabled]="!isCurrentStepValid()"
+                  class="w-full sm:w-auto bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-300 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg flex items-center justify-center gap-2 text-sm sm:text-base">
+                  Siguiente
+                  <mat-icon class="text-lg sm:text-xl">arrow_forward</mat-icon>
+                </button>
+              }
+              @if (currentStep === TOTAL_STEPS - 1) {
+                <button type="submit" [disabled]="tripForm.invalid || isLoading"
+                  class="w-full sm:w-auto bg-green-600 text-white hover:bg-green-700 transition-colors duration-300 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg flex items-center justify-center gap-2 text-sm sm:text-base">
+                  @if (isLoading) {
+                    <mat-spinner diameter="20" class="mr-2"></mat-spinner>
+                  }
+                  Guardar Cambios
+                </button>
+              }
             </div>
           </div>
         </form>
-      </ng-template>
+      }
+
     </div>
   </div>
 </div>

@@ -11,76 +11,77 @@
   </div>
 
   @if (isLoading) {
-  <div class="absolute inset-0 flex items-center justify-center backdrop-blur-sm transition-all duration-300">
-    <app-spinner></app-spinner>
-  </div>
+    <div class="absolute inset-0 flex items-center justify-center backdrop-blur-sm transition-all duration-300">
+      <app-spinner></app-spinner>
+    </div>
   }
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     @for (diary of diaries; track $index) {
-    <div
-      class="relative w-full flex flex-col bg-orange-100 rounded-xl shadow-xl shadow-neutral-500 p-4 my-6 border-l-8 border-black/65 overflow-hidden">
-      <!-- Anillas tipo agenda -->
-      <div class="absolute -left-2 top-6 flex flex-col gap-4 z-10">
-        <div class="w-4 h-4 bg-white rounded-full border-2 border-black/65 shadow"></div>
-        <div class="w-4 h-4 bg-white rounded-full border-2 border-black/65 shadow"></div>
-        <div class="w-4 h-4 bg-white rounded-full border-2 border-black/65 shadow"></div>
-      </div>
-      <div class="absolute -left-2 bottom-6 flex flex-col gap-4 z-10">
-        <div class="w-4 h-4 bg-white rounded-full border-2 border-black/65 shadow"></div>
-        <div class="w-4 h-4 bg-white rounded-full border-2 border-black/65 shadow"></div>
-        <div class="w-4 h-4 bg-white rounded-full border-2 border-black/65 shadow"></div>
-      </div>
+      <div
+        class="relative w-full flex flex-col bg-orange-100 rounded-xl shadow-xl shadow-neutral-500 p-4 my-6 border-l-8 border-black/65 overflow-hidden">
+        <!-- Anillas tipo agenda -->
+        <div class="absolute -left-2 top-6 flex flex-col gap-4 z-10">
+          <div class="w-4 h-4 bg-white rounded-full border-2 border-black/65 shadow"></div>
+          <div class="w-4 h-4 bg-white rounded-full border-2 border-black/65 shadow"></div>
+          <div class="w-4 h-4 bg-white rounded-full border-2 border-black/65 shadow"></div>
+        </div>
+        <div class="absolute -left-2 bottom-6 flex flex-col gap-4 z-10">
+          <div class="w-4 h-4 bg-white rounded-full border-2 border-black/65 shadow"></div>
+          <div class="w-4 h-4 bg-white rounded-full border-2 border-black/65 shadow"></div>
+          <div class="w-4 h-4 bg-white rounded-full border-2 border-black/65 shadow"></div>
+        </div>
 
-      <!-- Menú tipo marcapáginas como componente -->
-      <app-options-diary [diary]="diary" (editEvent)="editDiary($event)" (deleteEvent)="deleteDiary($event)">
-      </app-options-diary>
+        <!-- Menú tipo marcapáginas como componente -->
+        <app-options-diary [diary]="diary" (editEvent)="editDiary($event)" (deleteEvent)="deleteDiary($event)">
+        </app-options-diary>
 
-      <div class="w-full flex flex-col pl-2 gap-4">
-        <section class="relative w-full flex flex-col text-center px-1 gap-4">
-          <div class="w-full flex items-center justify-between border-b border-dotted">
-            <h2 class="font-bold text-lg text-start flex-1 text-black/85 tracking-wide">
-              Diario de {{diary.trip_name}}
-            </h2>
-          </div>
-          <div class="w-full flex flex-col gap-2 border-b border-dotted pb-2">
-            <div class="flex justify-center my-2">
-              <img *ngIf="diary.image_url; else noImage"
-                   [src]="diary.image_url"
-                   alt="Imagen del diario"
-                   class="rounded-lg max-h-48 object-cover shadow-md border border-gray-300" />
-              <ng-template #noImage>
-                <img src="./Dialog/confirm.png"
-                     alt="Sin imagen"
-                     class="rounded-lg max-h-48 object-cover shadow-md border border-gray-300 opacity-40" />
-              </ng-template>
+        <div class="w-full flex flex-col pl-2 gap-4">
+          <section class="relative w-full flex flex-col text-center px-1 gap-4">
+            <div class="w-full flex items-center justify-between border-b border-dotted">
+              <h2 class="font-bold text-lg text-start flex-1 text-black/85 tracking-wide">
+                Diario de {{diary.trip_name}}
+              </h2>
             </div>
-            <div class="w-full flex items-center justify-center mb-2">
-              <span class="text-sm text-gray-500">{{diary.date | date:'dd/MM/yyyy'}}</span>
+            <div class="w-full flex flex-col gap-2 border-b border-dotted pb-2">
+              <div class="flex justify-center my-2">
+                @if (diary.image_url) {
+                  <img
+                    [src]="diary.image_url"
+                    alt="Imagen del diario"
+                    class="rounded-lg max-h-48 object-cover shadow-md border border-gray-300" />
+                } @else {
+                  <img src="./Dialog/confirm.png"
+                    alt="Sin imagen"
+                    class="rounded-lg max-h-48 object-cover shadow-md border border-gray-300 opacity-40" />
+                }
+              </div>
+              <div class="w-full flex items-center justify-center mb-2">
+                <span class="text-sm text-gray-500">{{diary.date | date:'dd/MM/yyyy'}}</span>
+              </div>
+              <div class="flex flex-row items-center gap-4">
+                <span class="flex text-black/75">
+                  <mat-icon class="material-symbols-outlined">description</mat-icon>
+                </span>
+                <p class="text-gray-600 leading-relaxed text-left">{{diary.description}}</p>
+              </div>
             </div>
-            <div class="flex flex-row items-center gap-4">
-              <span class="flex text-black/75">
-                <mat-icon class="material-symbols-outlined">description</mat-icon>
-              </span>
-              <p class="text-gray-600 leading-relaxed text-left">{{diary.description}}</p>
-            </div>
-          </div>
-        </section>
+          </section>
+        </div>
       </div>
-    </div>
     }
   </div>
 
   @if (diaries.length === 0 && !isLoading) {
-  <div class="text-center py-12 bg-gray-50 rounded-lg mt-8">
-    <p class="text-gray-600">No tienes diarios de viaje aún. ¡Comienza a escribir tus aventuras!</p>
-  </div>
+    <div class="text-center py-12 bg-gray-50 rounded-lg mt-8">
+      <p class="text-gray-600">No tienes diarios de viaje aún. ¡Comienza a escribir tus aventuras!</p>
+    </div>
   }
 </div>
 
 <app-add-diary-modal [isOpen]="showAddModal"
-                     [tripId]="selectedTripId"
-                     (close)="showAddModal = false"
-                     (diaryAdded)="onDiaryAdded($event)">
+  [tripId]="selectedTripId"
+  (close)="showAddModal = false"
+  (diaryAdded)="onDiaryAdded($event)">
 </app-add-diary-modal>
 
 <app-edit-diary-modal

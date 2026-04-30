@@ -10,110 +10,133 @@
       </div>
     </div>
     @switch (currentStep) {
-    @case (1) {
-    <h2 class="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 mt-5 text-center">Elija sus Destinos</h2>
-    }
-    @case (2) {
-    <h2 class="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 mt-5 text-center">Elija sus Actividades</h2>
-    }
-    @case (3) {
-    <h2 class="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 mt-5 text-center">
-      ¿Qué tipo de recomendaciones te gustaría recibir?
-    </h2>
-    }
+      @case (1) {
+        <h2 class="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 mt-5 text-center">Elija sus Destinos</h2>
+      }
+      @case (2) {
+        <h2 class="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 mt-5 text-center">Elija sus Actividades</h2>
+      }
+      @case (3) {
+        <h2 class="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 mt-5 text-center">
+          ¿Qué tipo de recomendaciones te gustaría recibir?
+        </h2>
+      }
     }
     <!-- Contenido principal -->
     <div class="p-2 sm:p-4 md:p-6 lg:p-8 flex-1 flex flex-col overflow-auto">
       <form [formGroup]="form" (ngSubmit)="onSubmit()"
         class="space-y-1 sm:space-y-6 flex-1 flex flex-col overflow-hidden">
         <!-- Paso 1: Datos del viaje -->
-        <div *ngIf="currentStep === 0" class="animate-fadeIn flex-1">
-          <div class="max-h-full overflow-y-auto pr-2 scrollbar-hide">
-            <app-trip-step [parentForm]="form" [transportOptions]="transportOptions" [petOptions]="petOptions">
-            </app-trip-step>
+        @if (currentStep === 0) {
+          <div class="animate-fadeIn flex-1">
+            <div class="max-h-full overflow-y-auto pr-2 scrollbar-hide">
+              <app-trip-step [parentForm]="form" [transportOptions]="transportOptions" [petOptions]="petOptions">
+              </app-trip-step>
+            </div>
           </div>
-        </div>
+        }
 
         <!-- Paso 2: Gestión de destinos -->
-        <div *ngIf="currentStep === 1"
-          class="animate-fadeIn flex-1 overflow-y-auto pr-2 scrollbar-hide max-h-[calc(100vh-250px)]">
-          <app-locations-step [locationsFormArray]="locations" [onAddLocation]="addLocation.bind(this)"
-            [onRemoveLocation]="removeLocation.bind(this)">
-          </app-locations-step>
-        </div>
+        @if (currentStep === 1) {
+          <div
+            class="animate-fadeIn flex-1 overflow-y-auto pr-2 scrollbar-hide max-h-[calc(100vh-250px)]">
+            <app-locations-step [locationsFormArray]="locations" [onAddLocation]="addLocation.bind(this)"
+              [onRemoveLocation]="removeLocation.bind(this)">
+            </app-locations-step>
+          </div>
+        }
 
         <!-- Paso 3: Actividades personalizadas -->
-        <div *ngIf="currentStep === 2"
-          class="animate-fadeIn flex-1 overflow-y-auto pr-2 scrollbar-hide max-h-[calc(100vh-250px)]">
-          <div class="h-full overflow-y-auto pr-2 scrollbar-hide">
-            <app-activities-step [parentForm]="form" [onAddActivity]="addActivity.bind(this)"
-              [onRemoveActivity]="removeActivity.bind(this)" [availableLocations]="getAvailableLocations()">
-            </app-activities-step>
+        @if (currentStep === 2) {
+          <div
+            class="animate-fadeIn flex-1 overflow-y-auto pr-2 scrollbar-hide max-h-[calc(100vh-250px)]">
+            <div class="h-full overflow-y-auto pr-2 scrollbar-hide">
+              <app-activities-step [parentForm]="form" [onAddActivity]="addActivity.bind(this)"
+                [onRemoveActivity]="removeActivity.bind(this)" [availableLocations]="getAvailableLocations()">
+              </app-activities-step>
+            </div>
           </div>
-        </div>
+        }
 
         <!-- Paso 4: Recomendaciones opcionales -->
-        <div *ngIf="currentStep === 3"
-          class="animate-fadeIn flex-1 overflow-y-auto pr-2 scrollbar-hide max-h-[calc(100vh-250px)]">
-          <div class="grid gap-4 sm:gap-6">
+        @if (currentStep === 3) {
+          <div
+            class="animate-fadeIn flex-1 overflow-y-auto pr-2 scrollbar-hide max-h-[calc(100vh-250px)]">
             <div class="grid gap-4 sm:gap-6">
-              <!-- Recomendaciones generales -->
-              <div
-                class="bg-gray-50 rounded-lg sm:rounded-xl p-3 sm:p-4 md:p-6 hover:shadow-md transition-shadow duration-300">
-                <h3 class="text-base sm:text-lg md:text-xl font-medium text-gray-800 mb-3 sm:mb-4 text-center">
+              <div class="grid gap-4 sm:gap-6">
+                <!-- Recomendaciones generales -->
+                <div
+                  class="bg-gray-50 rounded-lg sm:rounded-xl p-3 sm:p-4 md:p-6 hover:shadow-md transition-shadow duration-300">
+                  <h3 class="text-base sm:text-lg md:text-xl font-medium text-gray-800 mb-3 sm:mb-4 text-center">
                   Recomendaciones Generales</h3>
-                <app-choose-recommendations [recommendations]="otherRecommendationsTypes"
-                  [selected]="selectedOtherRecommendations" (selectedChange)="selectedOtherRecommendations = $event">
-                </app-choose-recommendations>
-              </div>
-
-              <!-- Recomendaciones específicas de mascotas -->
-              <div *ngIf="hasPets()"
-                class="bg-gray-50 rounded-lg sm:rounded-xl p-3 sm:p-4 md:p-6 hover:shadow-md transition-shadow duration-300">
-                <h3 class="text-base sm:text-lg md:text-xl font-medium text-gray-800 mb-3 sm:mb-4 text-center">
-                  Recomendaciones para Mascotas</h3>
-                <app-choose-recommendations [recommendations]="petRecommendationsTypes"
-                  [selected]="selectedPetRecommendations" (selectedChange)="selectedPetRecommendations = $event">
-                </app-choose-recommendations>
+                  <app-choose-recommendations [recommendations]="otherRecommendationsTypes"
+                    [selected]="selectedOtherRecommendations" (selectedChange)="selectedOtherRecommendations = $event">
+                  </app-choose-recommendations>
+                </div>
+                <!-- Recomendaciones específicas de mascotas -->
+                @if (hasPets()) {
+                  <div
+                    class="bg-gray-50 rounded-lg sm:rounded-xl p-3 sm:p-4 md:p-6 hover:shadow-md transition-shadow duration-300">
+                    <h3 class="text-base sm:text-lg md:text-xl font-medium text-gray-800 mb-3 sm:mb-4 text-center">
+                    Recomendaciones para Mascotas</h3>
+                    <app-choose-recommendations [recommendations]="petRecommendationsTypes"
+                      [selected]="selectedPetRecommendations" (selectedChange)="selectedPetRecommendations = $event">
+                    </app-choose-recommendations>
+                  </div>
+                }
               </div>
             </div>
           </div>
-        </div>
+        }
 
         <!-- Mensaje de error -->
-        <div *ngIf="showValidationWarning" id="validation-warning"
-          class="bg-red-50 border-l-4 border-red-500 p-3 sm:p-4 rounded-lg">
-          <div class="flex">
-            <div class="flex-shrink-0">
-              <mat-icon class="text-red-500">error</mat-icon>
-            </div>
-            <div class="ml-3">
-              <p class="text-sm text-red-700">Por favor, completa todos los campos requeridos antes de continuar.</p>
+        @if (showValidationWarning) {
+          <div id="validation-warning"
+            class="bg-red-50 border-l-4 border-red-500 p-3 sm:p-4 rounded-lg">
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <mat-icon class="text-red-500">error</mat-icon>
+              </div>
+              <div class="ml-3">
+                <p class="text-sm text-red-700">Por favor, completa todos los campos requeridos antes de continuar.</p>
+              </div>
             </div>
           </div>
-        </div>
+        }
 
         <div
           class="flex flex-col sm:flex-row justify-end gap-3 sm:gap-4 mt-4 sm:mt-6 md:mt-8 pt-3 sm:pt-4 md:pt-6 z-10">
           <div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
-            <button *ngIf="currentStep > 0" type="button" (click)="prevStep()"
-              class="w-full sm:w-auto bg-gray-500 text-white hover:bg-gray-600 transition-colors duration-300 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg flex items-center justify-center gap-2 text-sm sm:text-base">
-              <mat-icon class="text-lg sm:text-xl">arrow_back</mat-icon>
-              Anterior
-            </button>
+            @if (currentStep > 0) {
+              <button type="button" (click)="prevStep()"
+                class="w-full sm:w-auto bg-gray-500 text-white hover:bg-gray-600 transition-colors duration-300 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg flex items-center justify-center gap-2 text-sm sm:text-base">
+                <mat-icon class="text-lg sm:text-xl">arrow_back</mat-icon>
+                Anterior
+              </button>
+            }
 
-            <button *ngIf="currentStep < steps.length - 1" type="button" (click)="nextStep()"
-              class="w-full sm:w-auto bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-300 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg flex items-center justify-center gap-2 text-sm sm:text-base">
-              Siguiente
-              <mat-icon class="text-lg sm:text-xl">arrow_forward</mat-icon>
-            </button>
+            @if (currentStep < steps.length - 1) {
+              <button type="button" (click)="nextStep()"
+                class="w-full sm:w-auto bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-300 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg flex items-center justify-center gap-2 text-sm sm:text-base">
+                Siguiente
+                <mat-icon class="text-lg sm:text-xl">arrow_forward</mat-icon>
+              </button>
+            }
 
-            <button *ngIf="currentStep === steps.length - 1" type="submit"
-              class="w-full sm:w-auto bg-green-600 text-white hover:bg-green-700 transition-colors duration-300 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg flex items-center justify-center gap-2 text-sm sm:text-base">
-              <mat-spinner *ngIf="isSubmitting" diameter="20" class="mr-2"></mat-spinner>
-              <ng-container *ngIf="!isSubmitting">Enviar</ng-container>
-              <ng-container *ngIf="isSubmitting">Enviando...</ng-container>
-            </button>
+            @if (currentStep === steps.length - 1) {
+              <button type="submit"
+                class="w-full sm:w-auto bg-green-600 text-white hover:bg-green-700 transition-colors duration-300 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg flex items-center justify-center gap-2 text-sm sm:text-base">
+                @if (isSubmitting) {
+                  <mat-spinner diameter="20" class="mr-2"></mat-spinner>
+                }
+                @if (!isSubmitting) {
+                  Enviar
+                }
+                @if (isSubmitting) {
+                  Enviando...
+                }
+              </button>
+            }
           </div>
         </div>
       </form>

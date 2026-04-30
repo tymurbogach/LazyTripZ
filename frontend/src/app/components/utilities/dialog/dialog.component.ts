@@ -1,11 +1,11 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-dialog',
-  imports: [CommonModule, FormsModule],
+  imports: [FormsModule],
   templateUrl: './dialog.component.html',
   styleUrl: './dialog.component.css'
 })

@@ -92,30 +92,6 @@ class PetController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Pet $pet) {
-        /*
-        try {
-            $params = $request->validate([
-                'type' => 'nullable|in:dog,cat',
-                'trip_id' => 'sometimes|integer|min:1|exists:trips,id',
-            ]);
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return $this->sendResponse(false, 'Validation error', $e->errors(), 422);
-        }
-
-        if (empty($params)) {
-            return $this->sendResponse(false, 'No data to update');
-        }
-
-        $pet->update($params);
-        $pet->refresh(); 
-        return $this->sendResponse(true, 'Pet successfully updated', $pet);
-        */
-    }
-
-    /**
      * Remove the specified resource from storage.
      */
     public function destroy(Pet $pet) {

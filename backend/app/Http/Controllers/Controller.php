@@ -3,17 +3,18 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use App\Http\Traits\ApiResponse;
 
 abstract class Controller
 {
-    use AuthorizesRequests;
+    use AuthorizesRequests, ApiResponse;
 
-    public function sendResponse($success, $message, $data = null, $status = 200)
+    protected function sendResponse($success, $message, $data = null, $status = 200)
     {
-        return response()->json([
-            'success' => $success,
-            'message' => $message,
-            'data' => $data
-        ], $status);
+        if ($success) {
+            return $this->successResponse($message, $data, $status);
+        }
+
+        return $this->errorResponse($message, $data, $status);
     }
 }

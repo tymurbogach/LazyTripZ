@@ -21,22 +21,23 @@
   <label class="block mb-2 font-medium">Medios de transporte</label>
   <div class="flex gap-4 mb-6">
     <!-- Botones para seleccionar/deseleccionar transportes disponibles -->
-    <button *ngFor="let option of transportOptions"
-            type="button"
-            (click)="toggleTransport(option)"
+    @for (option of transportOptions; track option) {
+      <button
+        type="button"
+        (click)="toggleTransport(option)"
             [ngClass]="{
               'bg-blue-600 text-white': isTransportSelected(option),
               'bg-gray-300 text-black': !isTransportSelected(option)
             }"
-            class="w-16 h-16 rounded-full shadow hover:brightness-90 transition-colors flex items-center justify-center">
-      
-      <!-- Ícono correspondiente al transporte (Material Icons) -->
-      <mat-icon
-        style="font-size: 3rem; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;"
-        class="leading-none">
-        {{ getTransportIcon(option) }}
-      </mat-icon>
-    </button>
+        class="w-16 h-16 rounded-full shadow hover:brightness-90 transition-colors flex items-center justify-center">
+        <!-- Ícono correspondiente al transporte (Material Icons) -->
+        <mat-icon
+          style="font-size: 3rem; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;"
+          class="leading-none">
+          {{ getTransportIcon(option) }}
+        </mat-icon>
+      </button>
+    }
   </div>
 
   <!-- Sección: Selección de mascotas -->
@@ -44,23 +45,23 @@
   <div class="flex gap-6 mb-4">
     <!-- Botón: Perro -->
     <button type="button"
-            (click)="togglePet('dog')"
+      (click)="togglePet('dog')"
             [ngClass]="{
               'bg-green-600 text-white': isPetSelected('dog'),
               'bg-gray-300 text-black': !isPetSelected('dog')
             }"
-            class="flex items-center justify-center w-16 h-16 rounded-full shadow hover:brightness-90 transition-colors">
+      class="flex items-center justify-center w-16 h-16 rounded-full shadow hover:brightness-90 transition-colors">
       <fa-icon [icon]="faDog" class="text-[2.5rem] leading-none" style="vertical-align: middle;"></fa-icon>
     </button>
 
     <!-- Botón: Gato -->
     <button type="button"
-            (click)="togglePet('cat')"
+      (click)="togglePet('cat')"
             [ngClass]="{
               'bg-green-600 text-white': isPetSelected('cat'),
               'bg-gray-300 text-black': !isPetSelected('cat')
             }"
-            class="flex items-center justify-center w-16 h-16 rounded-full shadow hover:brightness-90 transition-colors">
+      class="flex items-center justify-center w-16 h-16 rounded-full shadow hover:brightness-90 transition-colors">
       <fa-icon [icon]="faCat" class="text-[2.5rem] leading-none" style="vertical-align: middle;"></fa-icon>
     </button>
   </div>

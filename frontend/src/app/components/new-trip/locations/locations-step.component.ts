@@ -1,5 +1,5 @@
 import { Component, Input, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormArray, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { SearchGooglePlacesComponent } from '../../utilities/search-google-places/search-google-places.component';
 
@@ -10,7 +10,7 @@ import { SearchGooglePlacesComponent } from '../../utilities/search-google-place
 @Component({
   selector: 'app-locations-step',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, SearchGooglePlacesComponent],
+  imports: [ReactiveFormsModule, SearchGooglePlacesComponent],
   templateUrl: './locations-step.component.html',
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })

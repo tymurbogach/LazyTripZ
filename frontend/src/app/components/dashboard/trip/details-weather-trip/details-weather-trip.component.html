@@ -1,43 +1,47 @@
 @if (locations && locations.length > 0) {
-    <section class="flex flex-col gap-2 w-full h-max">
-        <h2 class="px-1 text-xl font-bold">Previsi&oacute;n del clima</h2>
-        
-        <div class="flex items-center justify-between px-4 py-2 bg-amber-50 rounded-lg">
-            <span class="flex items-center text-amber-950/65">
-                <mat-icon class="update-icon">update</mat-icon>
-            </span>
-            <div class="flex flex-row items-center gap-2">
-                <p class="text-black/65">&Uacute;lt. act.:</p>
-                <span class="text-sm font-bold text-black/80">
-                    {{ lastUpdated ? (lastUpdated | date:'dd/MM/yy, HH:mm') : 'Nunca' }}
-                </span>
-            </div>
-            <button 
-                class="cursor-pointer flex items-center"
-                [disabled]="isLoading"
-                (click)="refreshWeatherForecast()"
-                title="Actualizar clima"
-            >
-                <mat-icon *ngIf="!isLoading">refresh</mat-icon>
-                <mat-icon *ngIf="isLoading" class="animate-spin">autorenew</mat-icon>
-            </button>
-        </div>
-        <div class="w-full h-max pb-4 overflow-auto overflow-y-hidden flex gap-4">
-            @for (location of locations; track $index) {
-                <a [routerLink]="['/details_weather_trip', tripId, location.locality]" class="cursor-pointer">
-                    <div class="font-bold">
-                        <h3 class="px-1">{{ location.locality }}</h3>
-                    </div>
-                    <div class="flex px-1 gap-2">
-                        @for (forecast of location.weather_forecasts; track $index) {
-                            <app-details-weather-location-day
-                                [weatherForecast]="forecast"
-                            >
-                            </app-details-weather-location-day>
-                        }
-                    </div>
-                </a>
+  <section class="flex flex-col gap-2 w-full h-max">
+    <h2 class="px-1 text-xl font-bold">Previsi&oacute;n del clima</h2>
+
+    <div class="flex items-center justify-between px-4 py-2 bg-amber-50 rounded-lg">
+      <span class="flex items-center text-amber-950/65">
+        <mat-icon class="update-icon">update</mat-icon>
+      </span>
+      <div class="flex flex-row items-center gap-2">
+        <p class="text-black/65">&Uacute;lt. act.:</p>
+        <span class="text-sm font-bold text-black/80">
+          {{ lastUpdated ? (lastUpdated | date:'dd/MM/yy, HH:mm') : 'Nunca' }}
+        </span>
+      </div>
+      <button
+        class="cursor-pointer flex items-center"
+        [disabled]="isLoading"
+        (click)="refreshWeatherForecast()"
+        title="Actualizar clima"
+        >
+        @if (!isLoading) {
+          <mat-icon>refresh</mat-icon>
+        }
+        @if (isLoading) {
+          <mat-icon class="animate-spin">autorenew</mat-icon>
+        }
+      </button>
+    </div>
+    <div class="w-full h-max pb-4 overflow-auto overflow-y-hidden flex gap-4">
+      @for (location of locations; track $index) {
+        <a [routerLink]="['/details_weather_trip', tripId, location.locality]" class="cursor-pointer">
+          <div class="font-bold">
+            <h3 class="px-1">{{ location.locality }}</h3>
+          </div>
+          <div class="flex px-1 gap-2">
+            @for (forecast of location.weather_forecasts; track $index) {
+              <app-details-weather-location-day
+                [weatherForecast]="forecast"
+                >
+              </app-details-weather-location-day>
             }
-        </div>
-    </section>
+          </div>
+        </a>
+      }
+    </div>
+  </section>
 }

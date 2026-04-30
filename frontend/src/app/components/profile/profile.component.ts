@@ -2,13 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { User, Response } from '../../interfaces/response.interface';
 import { SpinnerComponent } from "../utilities/spinner/spinner.component";
-import { CommonModule } from '@angular/common';
+
 import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [SpinnerComponent, CommonModule, MatIconModule],
+  imports: [SpinnerComponent, MatIconModule],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.css',
 })

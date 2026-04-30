@@ -1,5 +1,5 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatIconModule } from '@angular/material/icon';
 import {
   FormBuilder,
@@ -34,14 +34,13 @@ import {
   selector: 'app-new-trip',
   standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     MatIconModule,
     TripStepComponent,
     LocationsStepComponent,
     ActivitiesStepComponent,
     ChooseRecommendationsComponent
-  ],
+],
   templateUrl: './new-trip.component.html',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })

@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreTripRequest;
 use App\Models\Trip;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
 
 class TripController extends Controller
 {
@@ -13,7 +13,8 @@ class TripController extends Controller
      */
     public function index() {
         $trips = Trip::all();
-        if (!$trips) {
+
+        if ($trips->isEmpty()) {
             return $this->sendResponse(false, 'The trips table is empty');
         }
 
@@ -23,38 +24,14 @@ class TripController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request) {
-        try {
-            $params = $request->validate([
-                'name' => 'required|string|max:32',
-                'adults' => 'required|integer|min:0',
-                'children' => 'required|integer|min:0',
-                'transport' => 'nullable|array',
-                'transport.*' => 'in:bicycle,car,bus,train,subway,plane,ship',
-                'last_weather_sync_at' => 'nullable|date',
-            ]);
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return $this->sendResponse(false, 'Error en las validaciones', $e->errors(), 422);
-        }
-        
-        if (empty($params)) {
-            return $this->sendResponse(false, 'No hay datos para crear el viaje');
-        }
+    public function store(StoreTripRequest $request) {
+        $trip = Trip::create($request->validated());
 
-        try {
-            // 1.Creo el viaje
-            $trip = Trip::create($params);
+        $trip->users()->attach($request->user()->id, [
+            'permission' => 'admin'
+        ]);
 
-            // 2.Añado el usuario al viaje con permiso de admin
-            $trip->users()->attach($request->user()->id, [
-                'permission' => 'admin'
-            ]);
-
-            return $this->sendResponse(true, 'Viaje creado con éxito', $trip, 201);
-
-        } catch (\Exception $e) {
-            return $this->sendResponse(false, 'Fallo al crear el viaje: ' . $e->getMessage(), [], 500);
-        }
+        return $this->sendResponse(true, 'Viaje creado con éxito', $trip, 201);
     }
 
     /**

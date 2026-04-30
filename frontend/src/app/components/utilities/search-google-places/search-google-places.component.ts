@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Output, OnDestroy, HostListener, ElementRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Subject, of } from 'rxjs';
@@ -29,7 +29,7 @@ interface PlaceResult {
 @Component({
   selector: 'app-search-google-places',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [FormsModule],
   templateUrl: './search-google-places.component.html',
   styleUrl: './search-google-places.component.css'
 })

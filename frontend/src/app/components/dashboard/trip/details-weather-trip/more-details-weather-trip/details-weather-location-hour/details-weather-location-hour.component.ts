@@ -1,12 +1,12 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { WeatherIconService } from '../../../../../../services/weather-icon.service';
 import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-details-weather-location-hour',
   standalone: true,
-  imports: [CommonModule, MatIconModule],
+  imports: [MatIconModule],
   templateUrl: './details-weather-location-hour.component.html',
   styleUrl: './details-weather-location-hour.component.css'
 })

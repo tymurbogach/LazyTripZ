@@ -1,4 +1,4 @@
-# Frontend — Angular 19 SPA
+# Frontend — Angular 21 SPA
 
 ## Arranque desde cero
 ```bash
@@ -9,13 +9,8 @@ npm install --legacy-peer-deps
 npx ng serve    # http://localhost:4200
 ```
 
-## Dependencias con versión fija — no actualizar sin revisar
-```
-@fortawesome/angular-fontawesome@0.15.0
-  → versión 0.13 requiere Angular 16
-  → versión 4.x (latest) requiere Angular 21
-  → 0.15.0 es la compatible con Angular 19
-```
+## Templates
+- Se usa block control flow (`@if`, `@for`, `@else`) — NO usar `*ngIf`/`*ngFor` (migrado en Angular 21)
 
 ## Estructura
 ```

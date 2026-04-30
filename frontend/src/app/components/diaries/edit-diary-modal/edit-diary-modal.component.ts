@@ -2,7 +2,7 @@ import {
   Component, EventEmitter, Input, Output,
   OnChanges, SimpleChanges, ViewChild, ElementRef
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { trigger, transition, style, animate } from '@angular/animations';
@@ -12,11 +12,10 @@ import { Diary } from '../../../interfaces/response.interface';
   selector: 'app-edit-diary-modal',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    MatIconModule,
-  ],
+    MatIconModule
+],
   templateUrl: './edit-diary-modal.component.html',
   styleUrls: ['./edit-diary-modal.component.css'],
   animations: [

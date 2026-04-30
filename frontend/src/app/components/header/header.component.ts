@@ -2,7 +2,7 @@ import { Component, EventEmitter, HostListener, Output, OnInit } from '@angular/
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-import { CommonModule } from '@angular/common';
+
 import { User } from '../../interfaces/response.interface';
 import { Router } from '@angular/router';
 import { DialogService } from '../../services/dialog.service';
@@ -10,7 +10,7 @@ import { DialogService } from '../../services/dialog.service';
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [MatIconModule, RouterLink, RouterModule, CommonModule],
+  imports: [MatIconModule, RouterLink, RouterModule],
   templateUrl: './header.component.html',
   styleUrl: './header.component.css',
 })

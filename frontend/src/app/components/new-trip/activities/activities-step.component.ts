@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormGroup, FormArray, ReactiveFormsModule } from '@angular/forms';
 
 /**
@@ -18,7 +18,7 @@ interface LocalidadConFechas {
 @Component({
   selector: 'app-activities-step',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [ReactiveFormsModule],
   templateUrl: './activities-step.component.html',
 })
 export class ActivitiesStepComponent {

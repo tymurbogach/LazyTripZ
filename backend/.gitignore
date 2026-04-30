@@ -21,3 +21,9 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+*.Zone.Identifier
+*:Zone.Identifier
+/storage/app/public
+/storage/framework/cache
+/storage/framework/sessions
+/storage/logs

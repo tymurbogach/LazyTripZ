@@ -1,49 +1,47 @@
 <!-- Iteración sobre cada localización en el FormArray -->
-<div *ngFor="let location of typedLocations; let i = index" 
-     [formGroup]="location"
-     class="relative mb-4 border p-4 rounded shadow">
-
-  <!-- Botón para eliminar una localización (visible solo si hay más de una) -->
-  <button *ngIf="typedLocations.length > 1" 
-          type="button"
-          class="absolute top-2 right-2 text-2xl font-bold text-red-600 hover:text-red-800 leading-none"
-          (click)="onRemoveLocation(i)">
-    ×
-  </button>
-
-  <!-- Vista previa del destino seleccionado (ciudad, provincia, país) -->
-  <label class="block mb-1 font-medium">Destino</label>
-  <div class="w-full mb-2 p-2 rounded bg-gray-100 border border-gray-300 text-gray-500">
-    {{ getFullLocation(i) || 'Selecione un destino' }}
+@for (location of typedLocations; track location; let i = $index) {
+  <div
+    [formGroup]="location"
+    class="relative mb-4 border p-4 rounded shadow">
+    <!-- Botón para eliminar una localización (visible solo si hay más de una) -->
+    @if (typedLocations.length > 1) {
+      <button
+        type="button"
+        class="absolute top-2 right-2 text-2xl font-bold text-red-600 hover:text-red-800 leading-none"
+        (click)="onRemoveLocation(i)">
+        ×
+      </button>
+    }
+    <!-- Vista previa del destino seleccionado (ciudad, provincia, país) -->
+    <label class="block mb-1 font-medium">Destino</label>
+    <div class="w-full mb-2 p-2 rounded bg-gray-100 border border-gray-300 text-gray-500">
+      {{ getFullLocation(i) || 'Selecione un destino' }}
+    </div>
+    <!-- Componente de búsqueda de lugares basado en Google Places -->
+    <app-search-google-places
+      (placeSelected)="onPlaceSelected($event, i)">
+    </app-search-google-places>
+    <!-- Alternativa comentada: Google Place Picker oficial (no utilizado) -->
+    <!--
+    <gmpx-place-picker class="w-full mb-4"
+      (gmpx-placechange)="onPlaceChange($event, i)"
+      placeholder="Buscar">
+    </gmpx-place-picker>
+    -->
+    <!-- Selección de rango de fechas para la estancia en el destino -->
+    <label class="block mb-1 font-medium">Rango de fechas</label>
+    <div class="flex gap-2 items-center">
+      <!-- Fecha de inicio -->
+      <input type="date" formControlName="start_date"
+        class="w-[125px] max-w-[40vw] p-2 rounded border border-gray-300 bg-gray-100 text-sm"
+        placeholder="Inicio" />
+      <!-- Fecha de fin -->
+      <input type="date" formControlName="end_date"
+        class="w-[125px] max-w-[40vw] p-2 rounded border border-gray-300 bg-gray-100 text-sm"
+        placeholder="Fin" />
+    </div>
   </div>
-
-  <!-- Componente de búsqueda de lugares basado en Google Places -->
-  <app-search-google-places
-    (placeSelected)="onPlaceSelected($event, i)">
-  </app-search-google-places>
-
-  <!-- Alternativa comentada: Google Place Picker oficial (no utilizado) -->
-  <!--
-  <gmpx-place-picker class="w-full mb-4" 
-                     (gmpx-placechange)="onPlaceChange($event, i)" 
-                     placeholder="Buscar">
-  </gmpx-place-picker>
-  -->
-
-  <!-- Selección de rango de fechas para la estancia en el destino -->
-  <label class="block mb-1 font-medium">Rango de fechas</label>
-  <div class="flex gap-2 items-center">
-    <!-- Fecha de inicio -->
-    <input type="date" formControlName="start_date"
-      class="w-[125px] max-w-[40vw] p-2 rounded border border-gray-300 bg-gray-100 text-sm"
-      placeholder="Inicio" />
-
-    <!-- Fecha de fin -->
-    <input type="date" formControlName="end_date"
-      class="w-[125px] max-w-[40vw] p-2 rounded border border-gray-300 bg-gray-100 text-sm"
-      placeholder="Fin" />
-  </div>
-</div>
+}
 
 <!-- Botón para añadir una nueva localización al viaje -->
 <button type="button" class="text-blue-500 mt-2" (click)="onAddLocation()">

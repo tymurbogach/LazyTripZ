@@ -122,9 +122,9 @@ class AuthController extends Controller
         return $this->sendResponse(true, 'User logged in successfully', $token);
     }
 
-    /**
-    * Logout a user and invalidate their token.
-    */
+/**
+     * Logout a user and invalidate their token.
+     */
     public function logout() {
         $user = Auth::user();
 
@@ -134,6 +134,20 @@ class AuthController extends Controller
 
         $user->tokens()->delete();
         return $this->sendResponse(true, 'User logged out successfully', null);
+    }
+
+    /**
+     * Get token from cookie (for Google OAuth callback).
+     * Route is public, reads directly from cookie.
+     */
+    public function getTokenFromCookie() {
+        $token = request()->cookie('auth_token');
+
+        if (!$token) {
+            return $this->sendResponse(false, 'No token found', null, 404);
+        }
+
+        return $this->sendResponse(true, 'Token retrieved', $token);
     }
 
     public function redirectToGoogle() {
@@ -185,13 +199,29 @@ class AuthController extends Controller
                 }
             }
 
-            // 6.Login y creo el token
+            // 6.Login y Creo el token y lo guardo en cookie segura
             Auth::login($user);
             $token = $user->createToken('AuthToken')->accessToken;
-            return redirect()->away("http://localhost:4200/auth/callback?token=" . urlencode($token));
+
+            // Cookie segura: httponly (no accesible por JS), secure (HTTPS), samesite (CSRF protection)
+            $cookie = cookie(
+                'auth_token',           // name
+                $token,                // value
+                60 * 24 * 7,          // minutes (1 week)
+                '/',                   // path
+                null,                  // domain
+                null,                  // secure (null = auto based on HTTPS)
+                true,                   // httpOnly (no JS access)
+                false,                  // raw
+                'Lax'                   // sameSite
+            );
+
+            return redirect("http://localhost:4200/auth/callback")
+                ->withCookie($cookie);
 
         } catch (\Exception $e) {
-            return redirect()->away("http://localhost:4200/auth/err?err=" . urlencode($e->getMessage()));
+            // Error redirect sin exponer detalles sensibles
+            return redirect("http://localhost:4200/auth/err?err=googleAuthFailed");
         }
     }
 }

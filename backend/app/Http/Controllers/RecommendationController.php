@@ -85,34 +85,15 @@ class RecommendationController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index() {
+    public function index()
+    {
         $recommendations = Recommendation::all();
-        if (!$recommendations) {
+
+        if ($recommendations->isEmpty()) {
             return $this->sendResponse(false, 'The recommendations table is empty');
         }
 
         return $this->sendResponse(true, 'Recommendations successfully retrieved', $recommendations);
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request) {
-
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Recommendation $recommendation) {
-        return $this->sendResponse(true, 'Recommendation successfully retrieved', $recommendation);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Recommendation $recommendation) {
-
     }
 
     /**

@@ -1,109 +1,114 @@
 <!-- Fondo oscuro -->
-<div *ngIf="isOpen" @backdropAnim
-  class="fixed inset-0 z-50 flex items-center justify-center px-3 py-4 bg-black/60 backdrop-blur-sm">
-
-  <!-- Tarjeta modal con estética cuaderno de viaje -->
-  <div @modalAnim class="modal-card w-full max-w-xl relative">
-
-    <!-- Anillas decorativas (guiño al diseño de las tarjetas de diario) -->
-    <div class="rings-left">
-      <span class="ring"></span>
-      <span class="ring"></span>
-      <span class="ring"></span>
-    </div>
-
-    <!-- Cabecera -->
-    <div class="modal-header">
-      <div class="flex items-center gap-2">
-        <mat-icon class="header-icon">edit_document</mat-icon>
-        <h2 class="modal-title">Editar entrada</h2>
+@if (isOpen) {
+  <div @backdropAnim
+    class="fixed inset-0 z-50 flex items-center justify-center px-3 py-4 bg-black/60 backdrop-blur-sm">
+    <!-- Tarjeta modal con estética cuaderno de viaje -->
+    <div @modalAnim class="modal-card w-full max-w-xl relative">
+      <!-- Anillas decorativas (guiño al diseño de las tarjetas de diario) -->
+      <div class="rings-left">
+        <span class="ring"></span>
+        <span class="ring"></span>
+        <span class="ring"></span>
       </div>
-      <button (click)="closeModal()" class="close-btn" type="button" title="Cerrar">
-        <mat-icon>close</mat-icon>
-      </button>
-    </div>
-
-    <!-- Formulario -->
-    <form [formGroup]="diaryForm" (ngSubmit)="onSubmit()" class="modal-body">
-
-      <!-- Descripción — área de texto con líneas de cuaderno -->
-      <div class="field-group">
-        <label class="field-label">
-          <mat-icon class="label-icon">description</mat-icon>
-          Descripción
-        </label>
-        <div class="textarea-wrapper">
-          <textarea
-            formControlName="description"
-            class="diary-textarea"
-            rows="5"
-            placeholder="Escribe tu experiencia de viaje...">
-          </textarea>
-          <span class="char-count" [class.char-warn]="descriptionLength > 900">
-            {{ descriptionLength }}/1000
-          </span>
+      <!-- Cabecera -->
+      <div class="modal-header">
+        <div class="flex items-center gap-2">
+          <mat-icon class="header-icon">edit_document</mat-icon>
+          <h2 class="modal-title">Editar entrada</h2>
         </div>
-        <div class="field-error" *ngIf="diaryForm.get('description')?.invalid && diaryForm.get('description')?.touched">
-          <span *ngIf="diaryForm.get('description')?.hasError('required')">Requerido</span>
-          <span *ngIf="diaryForm.get('description')?.hasError('minlength')">Mínimo 10 caracteres</span>
-          <span *ngIf="diaryForm.get('description')?.hasError('maxlength')">Máximo 1000 caracteres</span>
-        </div>
-      </div>
-
-      <!-- Fecha -->
-      <div class="field-group">
-        <label for="edit-date" class="field-label">
-          <mat-icon class="label-icon">calendar_today</mat-icon>
-          Fecha
-        </label>
-        <input
-          id="edit-date"
-          type="date"
-          formControlName="date"
-          class="date-input"
-          [max]="maxDate" />
-        <div class="field-error" *ngIf="diaryForm.get('date')?.invalid && diaryForm.get('date')?.touched">
-          Fecha obligatoria
-        </div>
-      </div>
-
-      <!-- Imagen -->
-      <div class="field-group">
-        <label class="field-label">
-          <mat-icon class="label-icon">photo_camera</mat-icon>
-          Imagen <span class="optional-badge">opcional</span>
-        </label>
-
-        <!-- Preview -->
-        <div *ngIf="imagePreview" class="image-preview-wrapper">
-          <img [src]="imagePreview" alt="Vista previa" class="image-preview" />
-          <button type="button" (click)="removeImage()" class="remove-image-btn" title="Quitar imagen">
-            <mat-icon>delete_outline</mat-icon>
-          </button>
-        </div>
-
-        <!-- Selector -->
-        <div class="image-selector">
-          <button type="button" (click)="fileInput.click()" class="select-image-btn">
-            <mat-icon>{{ imagePreview ? 'swap_horiz' : 'add_photo_alternate' }}</mat-icon>
-            {{ imagePreview ? 'Cambiar imagen' : 'Seleccionar imagen' }}
-          </button>
-          <span *ngIf="selectedImage" class="filename">{{ selectedImage.name }}</span>
-          <input #fileInput type="file" accept="image/*" (change)="onFileSelected($event)" class="hidden" />
-        </div>
-      </div>
-
-      <!-- Botones -->
-      <div class="modal-actions">
-        <button type="button" (click)="closeModal()" class="btn-cancel">
-          Cancelar
-        </button>
-        <button type="submit" [disabled]="diaryForm.invalid" class="btn-save">
-          <mat-icon>save</mat-icon>
-          Guardar cambios
+        <button (click)="closeModal()" class="close-btn" type="button" title="Cerrar">
+          <mat-icon>close</mat-icon>
         </button>
       </div>
-
-    </form>
+      <!-- Formulario -->
+      <form [formGroup]="diaryForm" (ngSubmit)="onSubmit()" class="modal-body">
+        <!-- Descripción — área de texto con líneas de cuaderno -->
+        <div class="field-group">
+          <label class="field-label">
+            <mat-icon class="label-icon">description</mat-icon>
+            Descripción
+          </label>
+          <div class="textarea-wrapper">
+            <textarea
+              formControlName="description"
+              class="diary-textarea"
+              rows="5"
+              placeholder="Escribe tu experiencia de viaje...">
+            </textarea>
+            <span class="char-count" [class.char-warn]="descriptionLength > 900">
+              {{ descriptionLength }}/1000
+            </span>
+          </div>
+          @if (diaryForm.get('description')?.invalid && diaryForm.get('description')?.touched) {
+            <div class="field-error">
+              @if (diaryForm.get('description')?.hasError('required')) {
+                <span>Requerido</span>
+              }
+              @if (diaryForm.get('description')?.hasError('minlength')) {
+                <span>Mínimo 10 caracteres</span>
+              }
+              @if (diaryForm.get('description')?.hasError('maxlength')) {
+                <span>Máximo 1000 caracteres</span>
+              }
+            </div>
+          }
+        </div>
+        <!-- Fecha -->
+        <div class="field-group">
+          <label for="edit-date" class="field-label">
+            <mat-icon class="label-icon">calendar_today</mat-icon>
+            Fecha
+          </label>
+          <input
+            id="edit-date"
+            type="date"
+            formControlName="date"
+            class="date-input"
+            [max]="maxDate" />
+          @if (diaryForm.get('date')?.invalid && diaryForm.get('date')?.touched) {
+            <div class="field-error">
+              Fecha obligatoria
+            </div>
+          }
+        </div>
+        <!-- Imagen -->
+        <div class="field-group">
+          <label class="field-label">
+            <mat-icon class="label-icon">photo_camera</mat-icon>
+            Imagen <span class="optional-badge">opcional</span>
+          </label>
+          <!-- Preview -->
+          @if (imagePreview) {
+            <div class="image-preview-wrapper">
+              <img [src]="imagePreview" alt="Vista previa" class="image-preview" />
+              <button type="button" (click)="removeImage()" class="remove-image-btn" title="Quitar imagen">
+                <mat-icon>delete_outline</mat-icon>
+              </button>
+            </div>
+          }
+          <!-- Selector -->
+          <div class="image-selector">
+            <button type="button" (click)="fileInput.click()" class="select-image-btn">
+              <mat-icon>{{ imagePreview ? 'swap_horiz' : 'add_photo_alternate' }}</mat-icon>
+              {{ imagePreview ? 'Cambiar imagen' : 'Seleccionar imagen' }}
+            </button>
+            @if (selectedImage) {
+              <span class="filename">{{ selectedImage.name }}</span>
+            }
+            <input #fileInput type="file" accept="image/*" (change)="onFileSelected($event)" class="hidden" />
+          </div>
+        </div>
+        <!-- Botones -->
+        <div class="modal-actions">
+          <button type="button" (click)="closeModal()" class="btn-cancel">
+            Cancelar
+          </button>
+          <button type="submit" [disabled]="diaryForm.invalid" class="btn-save">
+            <mat-icon>save</mat-icon>
+            Guardar cambios
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
-</div>
+}

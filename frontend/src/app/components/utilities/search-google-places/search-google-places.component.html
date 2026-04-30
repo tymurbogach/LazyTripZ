@@ -18,59 +18,66 @@
       (input)="onInput($any($event.target).value)"
       placeholder="Busca tu próximo destino..."
       autocomplete="off"
-    />
+      />
 
     <!-- Spinner de carga -->
-    <span *ngIf="isLoading" class="spinner" aria-label="Buscando...">
-      <span></span><span></span><span></span>
-    </span>
+    @if (isLoading) {
+      <span class="spinner" aria-label="Buscando...">
+        <span></span><span></span><span></span>
+      </span>
+    }
 
     <!-- Botón limpiar -->
-    <button
-      *ngIf="query && !isLoading"
-      type="button"
-      (click)="clearSelection()"
-      class="clear-btn"
-      title="Limpiar"
-    >
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-      </svg>
-    </button>
+    @if (query && !isLoading) {
+      <button
+        type="button"
+        (click)="clearSelection()"
+        class="clear-btn"
+        title="Limpiar"
+        >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    }
   </div>
 
   <!-- Dropdown de resultados -->
-  <div *ngIf="showDropdown" class="results-dropdown" role="listbox">
-
-    <div class="results-header">
-      <span class="results-label">Resultados</span>
-      <span class="results-source">via OpenStreetMap</span>
-    </div>
-
-    <button
-      *ngFor="let place of results; let i = index"
-      type="button"
-      class="result-item"
-      role="option"
-      (click)="selectPlace(place)"
-    >
-      <span class="result-dot" [style.animation-delay]="(i * 60) + 'ms'"></span>
-      <div class="result-text">
-        <span class="result-city">{{ place.city }}</span>
-        <span class="result-sub" *ngIf="place.province || place.country">
-          {{ place.province ? place.province + ' · ' + place.country : place.country }}
-        </span>
+  @if (showDropdown) {
+    <div class="results-dropdown" role="listbox">
+      <div class="results-header">
+        <span class="results-label">Resultados</span>
+        <span class="results-source">via OpenStreetMap</span>
       </div>
-      <svg class="result-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <polyline points="9 18 15 12 9 6"/>
-      </svg>
-    </button>
-
-  </div>
+      @for (place of results; track place; let i = $index) {
+        <button
+          type="button"
+          class="result-item"
+          role="option"
+          (click)="selectPlace(place)"
+          >
+          <span class="result-dot" [style.animation-delay]="(i * 60) + 'ms'"></span>
+          <div class="result-text">
+            <span class="result-city">{{ place.city }}</span>
+            @if (place.province || place.country) {
+              <span class="result-sub">
+                {{ place.province ? place.province + ' · ' + place.country : place.country }}
+              </span>
+            }
+          </div>
+          <svg class="result-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6"/>
+          </svg>
+        </button>
+      }
+    </div>
+  }
 
   <!-- Mensaje sin query suficiente -->
-  <p *ngIf="!showDropdown && query.length > 0 && query.length < 3" class="hint-text">
-    Escribe al menos 3 caracteres
-  </p>
+  @if (!showDropdown && query.length > 0 && query.length < 3) {
+    <p class="hint-text">
+      Escribe al menos 3 caracteres
+    </p>
+  }
 
 </div>

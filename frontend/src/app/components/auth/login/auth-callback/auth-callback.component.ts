@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { SpinnerComponent } from '../../../utilities/spinner/spinner.component';
 
@@ -11,19 +12,24 @@ import { SpinnerComponent } from '../../../utilities/spinner/spinner.component';
 })
 export class AuthCallbackComponent implements OnInit {
   constructor(
-    private route: ActivatedRoute,
     private router: Router,
+    private http: HttpClient,
   ) {}
 
   ngOnInit() {
-    this.route.queryParams.subscribe(params => {
-      const token = params['token'];
-
-      if (token) {
-        localStorage.setItem('authToken', token);
-        this.router.navigate(['/dashboard']);
-
-      } else {
+    // Leer token desde cookie (con withCredentials para enviar cookies)
+    this.http.get<{ data: string }>('http://localhost:8000/api/auth/token-from-cookie', {
+      withCredentials: true
+    }).subscribe({
+      next: (response) => {
+        if (response?.data) {
+          localStorage.setItem('authToken', response.data);
+          this.router.navigate(['/dashboard']);
+        } else {
+          this.router.navigate(['/login']);
+        }
+      },
+      error: () => {
         this.router.navigate(['/login']);
       }
     });

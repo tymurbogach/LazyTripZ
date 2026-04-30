@@ -1,4 +1,4 @@
-# Backend — Laravel 11 API
+# Backend — Laravel 13 API
 
 ## Arranque desde cero
 ```bash

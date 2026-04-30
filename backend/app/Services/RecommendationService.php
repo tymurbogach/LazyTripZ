@@ -10,7 +10,7 @@ class RecommendationService
     private function callGemini(string $prompt, array $responseSchema)
     {
         $apiKey = config('services.gemini.key');
-        $model  = config('services.gemini.model', 'gemini-2.5-flash');
+        $model  = config('services.gemini.model', 'gemini-1.5-flash');
         $url    = "https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key={$apiKey}";
 
         $response = Http::post($url, [
@@ -34,7 +34,7 @@ class RecommendationService
                 'body'   => $response->body(),
             ]);
             if ($status === 429) {
-                throw new \RuntimeException("Gemini quota exceeded (429). Job will retry.");
+                throw new \RuntimeException("Gemini quota exceeded (429). Please check your API quota.");
             }
             return [];
         }

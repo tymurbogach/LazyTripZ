@@ -6,23 +6,20 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StoreTripRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [
-            //
+            'name' => 'required|string|max:32',
+            'adults' => 'required|integer|min:0',
+            'children' => 'required|integer|min:0',
+            'transport' => 'nullable|array',
+            'transport.*' => 'in:bicycle,car,bus,train,subway,plane,ship',
+            'last_weather_sync_at' => 'nullable|date',
         ];
     }
 }

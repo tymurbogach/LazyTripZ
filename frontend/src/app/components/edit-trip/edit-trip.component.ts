@@ -13,7 +13,7 @@ import {
   Validators,
   ReactiveFormsModule
 } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -58,7 +58,6 @@ interface ActivityWithIdAndLocation extends Activity {
   templateUrl: './edit-trip.component.html',
   standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     MatIconModule,
     MatButtonModule,
@@ -75,8 +74,8 @@ interface ActivityWithIdAndLocation extends Activity {
     LocationsStepComponent,
     ActivitiesStepComponent,
     ChooseRecommendationsComponent,
-    SpinnerComponent,
-  ]
+    SpinnerComponent
+]
 })
 export class EditTripComponent implements OnInit {
   /**

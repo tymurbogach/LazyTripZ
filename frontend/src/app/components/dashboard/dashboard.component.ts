@@ -6,13 +6,13 @@ import { Trip } from '../../interfaces/response.interface';
 import { TripComponent } from './trip/trip.component';
 import { finalize } from 'rxjs';
 import { SpinnerComponent } from "../utilities/spinner/spinner.component";
-import { CommonModule } from '@angular/common';
+
 import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule, TripComponent, SpinnerComponent, MatIconModule],
+  imports: [RouterModule, TripComponent, SpinnerComponent, MatIconModule],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css',
 })

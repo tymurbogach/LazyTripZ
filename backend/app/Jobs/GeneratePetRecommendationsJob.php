@@ -16,6 +16,9 @@ class GeneratePetRecommendationsJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    public int $tries = 3;
+    public int $backoff = 30; // 30s entre reintentos para respetar rate limits de Gemini
+
     protected $locations;
     protected $type;
     protected $trip_id;

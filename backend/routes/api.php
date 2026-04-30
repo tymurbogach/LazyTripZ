@@ -20,6 +20,7 @@ Route::prefix('auth')->controller(AuthController::class)->group(function () {
     Route::post('/login', 'login');
     Route::post('/register', 'register');
     Route::post('/check/{field}', 'checkField');
+    Route::get('/token-from-cookie', 'getTokenFromCookie'); // público, lee cookie directamente
 });
 
 Route::middleware('auth:api')->group(function () {

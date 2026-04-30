@@ -1,194 +1,206 @@
 @if (trip) {
-<div
+  <div
     class="relative w-full flex flex-col bg-orange-100 rounded-xl shadow-xl shadow-neutral-500 p-4 my-6 border-l-8 border-black/65 overflow-hidden">
     <!-- Anillas tipo agenda -->
     <div class="absolute -left-2 top-6 flex flex-col gap-4 z-10">
-        <div class="w-4 h-4 bg-white rounded-full border-2 border-black/65 shadow"></div>
-        <div class="w-4 h-4 bg-white rounded-full border-2 border-black/65 shadow"></div>
-        <div class="w-4 h-4 bg-white rounded-full border-2 border-black/65 shadow"></div>
+      <div class="w-4 h-4 bg-white rounded-full border-2 border-black/65 shadow"></div>
+      <div class="w-4 h-4 bg-white rounded-full border-2 border-black/65 shadow"></div>
+      <div class="w-4 h-4 bg-white rounded-full border-2 border-black/65 shadow"></div>
     </div>
     <div class="absolute -left-2 bottom-6 flex flex-col gap-4 z-10">
-        <div class="w-4 h-4 bg-white rounded-full border-2 border-black/65 shadow"></div>
-        <div class="w-4 h-4 bg-white rounded-full border-2 border-black/65 shadow"></div>
-        <div class="w-4 h-4 bg-white rounded-full border-2 border-black/65 shadow"></div>
+      <div class="w-4 h-4 bg-white rounded-full border-2 border-black/65 shadow"></div>
+      <div class="w-4 h-4 bg-white rounded-full border-2 border-black/65 shadow"></div>
+      <div class="w-4 h-4 bg-white rounded-full border-2 border-black/65 shadow"></div>
     </div>
 
     <div class="w-full flex flex-col pl-2 gap-4">
-        <section class="relative w-full flex flex-col text-center px-1 gap-4">
-            <div class="w-full flex items-center justify-between border-b border-dotted">
-                <h2 class="font-bold text-lg text-start flex-1 text-black/85 tracking-wide">
-                    {{ trip.name }}
-                </h2>
-                <app-options-trip [trip]="trip" (refreshEvent)="refreshEvent.emit()" (updateEvent)="updateEvent.emit()"
-                    (deleteEvent)="deleteEvent.emit()"></app-options-trip>
+      <section class="relative w-full flex flex-col text-center px-1 gap-4">
+        <div class="w-full flex items-center justify-between border-b border-dotted">
+          <h2 class="font-bold text-lg text-start flex-1 text-black/85 tracking-wide">
+            {{ trip.name }}
+          </h2>
+          <app-options-trip [trip]="trip" (refreshEvent)="refreshEvent.emit()" (updateEvent)="updateEvent.emit()"
+          (deleteEvent)="deleteEvent.emit()"></app-options-trip>
 
-        @if (isLoading) {
-        <!-- Spinner cargando recomendaciones iniciales -->
-        <div @fadeInOut class="flex absolute top-16 right-16">
-          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600"></div>
-        </div>
-        } @else if (isGeneratingRecs) {
-        <!-- Spinner generando con IA -->
-        <div @fadeInOut class="flex absolute top-16 right-16 flex-col items-center gap-0.5">
-          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500"></div>
-          <span class="text-[9px] text-amber-700 font-semibold">IA...</span>
-        </div>
-        } @else {
-        <!-- Botón recomendaciones: verde=ver / gris=generar -->
-        <div @fadeInOut class="flex absolute top-16 right-28">
-          @if (hasRecommendations()) {
-          <button
-            class="w-10 h-10 flex justify-center items-center p-2 bg-emerald-600/75 hover:bg-emerald-700/80 text-white rounded-full transition-all cursor-pointer shadow-lg shadow-neutral-500/50 duration-200 hover:scale-105"
-            title="Ver recomendaciones"
-            [routerLink]="['/recommendations', trip.id, trip.name]"
-          >
-            <mat-icon class="material-symbols">recommend</mat-icon>
-          </button>
+          @if (isLoading) {
+            <!-- Spinner cargando recomendaciones iniciales -->
+            <div @fadeInOut class="flex absolute top-16 right-16">
+              <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600"></div>
+            </div>
+          } @else if (isGeneratingRecs) {
+            <!-- Spinner generando con IA -->
+            <div @fadeInOut class="flex absolute top-16 right-16 flex-col items-center gap-0.5">
+              <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500"></div>
+              <span class="text-[9px] text-amber-700 font-semibold">IA...</span>
+            </div>
           } @else {
-          <button
-            class="w-10 h-10 flex justify-center items-center p-2 bg-gray-400/75 hover:bg-gray-500/80 text-white rounded-full transition-all cursor-pointer shadow-lg shadow-neutral-500/50 duration-200 hover:scale-105"
-            title="Generar recomendaciones con IA"
-            (click)="generateRecommendations()"
-          >
-            <mat-icon class="material-symbols">auto_awesome</mat-icon>
-          </button>
-          }
-        </div>
-        <!-- Botón actividades (azul) -->
-        <div @fadeInOut class="flex absolute top-16 right-16">
+            <!-- Botón recomendaciones: verde=ver / gris=generar -->
+            <div @fadeInOut class="flex absolute top-16 right-28">
+              @if (hasRecommendations()) {
+                <button
+                  class="w-10 h-10 flex justify-center items-center p-2 bg-emerald-600/75 hover:bg-emerald-700/80 text-white rounded-full transition-all cursor-pointer shadow-lg shadow-neutral-500/50 duration-200 hover:scale-105"
+                  title="Ver recomendaciones"
+                  [routerLink]="['/recommendations', trip.id, trip.name]"
+                  >
+                  <mat-icon class="material-symbols">recommend</mat-icon>
+                </button>
+              } @else {
+                <button
+                  class="w-10 h-10 flex justify-center items-center p-2 bg-gray-400/75 hover:bg-gray-500/80 text-white rounded-full transition-all cursor-pointer shadow-lg shadow-neutral-500/50 duration-200 hover:scale-105"
+                  title="Generar recomendaciones con IA"
+                  (click)="generateRecommendations()"
+                  >
+                  <mat-icon class="material-symbols">auto_awesome</mat-icon>
+                </button>
+              }
+            </div>
+            <!-- Botón actividades (azul) -->
+            <div @fadeInOut class="flex absolute top-16 right-16">
           <button class="w-10 h-10 flex justify-center items-center p-2 bg-sky-600/75 hover:bg-sky-700/80 active:bg-sky-800 text-white rounded-full
             transition-all cursor-pointer shadow-lg shadow-neutral-500/50 duration-200 hover:scale-105"
-            title="Actividades"
-            (click)="toggleActivities()">
-            <mat-icon class="material-symbols">event_note</mat-icon>
-          </button>
-        </div>
-        <!-- Botón reload recs (ámbar) — solo cuando ya hay recomendaciones -->
-        @if (hasRecommendations()) {
-        <div @fadeInOut class="flex absolute top-16 right-4">
-          <button
-            class="w-10 h-10 flex justify-center items-center p-2 bg-amber-500/75 hover:bg-amber-600/80 text-white rounded-full transition-all cursor-pointer shadow-lg shadow-neutral-500/50 duration-200 hover:scale-105"
-            title="Recargar recomendaciones"
-            (click)="reloadRecommendations()"
-          >
-            <mat-icon class="material-symbols">sync</mat-icon>
-          </button>
-        </div>
-        }
-        }
-      </div>
-
-      <div class="w-full flex flex-col gap-2 border-b border-dotted pb-2">
-        <div class="flex flex-row items-center gap-4">
-          <span class="flex text-black/75">
-            <mat-icon class="material-symbols-outlined">date_range</mat-icon>
-          </span>
-          <p class="font-semibold">
-            {{ dateRange.start | date:'dd MMM yy' }} - {{ dateRange.end | date:'dd MMM yy' }}
-          </p>
-        </div>
-
-        <div class="flex flex-row items-center gap-4">
-          <span class="flex text-black/75">
-            <mat-icon class="material-symbols-outlined">group</mat-icon>
-          </span>
-          <p class="font-semibold">
-            @if (trip.adults > 1) {
-              {{ trip.adults }} adultos
-            } @else {
-              {{ trip.adults }} adulto
+                title="Actividades"
+                (click)="toggleActivities()">
+                <mat-icon class="material-symbols">event_note</mat-icon>
+              </button>
+            </div>
+            <!-- Botón reload recs (ámbar) — solo cuando ya hay recomendaciones -->
+            @if (hasRecommendations()) {
+              <div @fadeInOut class="flex absolute top-16 right-4">
+                <button
+                  class="w-10 h-10 flex justify-center items-center p-2 bg-amber-500/75 hover:bg-amber-600/80 text-white rounded-full transition-all cursor-pointer shadow-lg shadow-neutral-500/50 duration-200 hover:scale-105"
+                  title="Recargar recomendaciones"
+                  (click)="reloadRecommendations()"
+                  >
+                  <mat-icon class="material-symbols">sync</mat-icon>
+                </button>
+              </div>
             }
-            @if (trip.children > 1) {
-              , {{ trip.children }} niños
-            } @else if (trip.children == 1) {
-              , {{ trip.children }} niño
-            }
-          </p>
-          @if (pets.length) {
-            <span class="flex flex-row gap-2 items-center text-black/75">
-              @for (pet of pets; track pet.id) {
-                <span class="flex items-center text-sm">
-                  <fa-icon class="text-xl" *ngIf="pet.type === 'dog'" [icon]="faDog"></fa-icon>
-                  <fa-icon class="text-xl" *ngIf="pet.type === 'cat'" [icon]="faCat"></fa-icon>
-                </span>
-              }
-            </span>
           }
         </div>
 
-        @if(trip.transport) {
-          <div class="flex flex-row items-start gap-4">
+        <div class="w-full flex flex-col gap-2 border-b border-dotted pb-2">
+          <div class="flex flex-row items-center gap-4">
             <span class="flex text-black/75">
-              <mat-icon class="material-symbols-outlined">travel_explore</mat-icon>
+              <mat-icon class="material-symbols-outlined">date_range</mat-icon>
             </span>
-            <div class="flex flex-row gap-2">
-              <p class="font-semibold flex flex-row items-center gap-4">
-                Transporte
-                <span class="flex flex-row gap-2 items-center text-black/75">
-                  @for (type of trip.transport; track $index) {
-                    <mat-icon class="material-symbols" *ngIf="type === 'bus'">directions_bus</mat-icon>
-                    <mat-icon class="material-symbols" *ngIf="type === 'plane'">flight</mat-icon>
-                    <mat-icon class="material-symbols" *ngIf="type === 'car'">directions_car</mat-icon>
-                    <mat-icon class="material-symbols" *ngIf="type === 'train'">train</mat-icon>
-                  }
-                </span>
-              </p>
-            </div>
+            <p class="font-semibold">
+              {{ dateRange.start | date:'dd MMM yy' }} - {{ dateRange.end | date:'dd MMM yy' }}
+            </p>
           </div>
-        }
-      </div>
 
-            <div class="flex flex-row gap-4">
-                <span class="flex text-black/65">
-                    <mat-icon class="material-symbols-outlined">location_on</mat-icon>
-                </span>
-                <div class="flex flex-row flex-wrap gap-x-2">
-                    @for (location of trip.locations; track $index) {
-                    @if ($index === trip.locations.length - 1) {
-                    <p class="font-semibold">{{ location.locality }}</p>
-                    } @else {
-                    <p class="font-semibold">{{ location.locality }},</p>
+          <div class="flex flex-row items-center gap-4">
+            <span class="flex text-black/75">
+              <mat-icon class="material-symbols-outlined">group</mat-icon>
+            </span>
+            <p class="font-semibold">
+              @if (trip.adults > 1) {
+                {{ trip.adults }} adultos
+              } @else {
+                {{ trip.adults }} adulto
+              }
+              @if (trip.children > 1) {
+                , {{ trip.children }} niños
+              } @else if (trip.children == 1) {
+                , {{ trip.children }} niño
+              }
+            </p>
+            @if (pets.length) {
+              <span class="flex flex-row gap-2 items-center text-black/75">
+                @for (pet of pets; track pet.id) {
+                  <span class="flex items-center text-sm">
+                    @if (pet.type === 'dog') {
+                      <fa-icon class="text-xl" [icon]="faDog"></fa-icon>
                     }
+                    @if (pet.type === 'cat') {
+                      <fa-icon class="text-xl" [icon]="faCat"></fa-icon>
                     }
-                </div>
-            </div>
-        </section>
-
-    <!-- Actividades -->
-    <div class="w-full transition-all duration-500 overflow-hidden"
-      [ngClass]="showActivities ? 'max-h-96 opacity-100 mt-4' : 'max-h-0 opacity-0'">
-      <div class="flex flex-col gap-2 bg-white/80 p-4 rounded-lg shadow-inner">
-        <h3 class="font-semibold text-black/85">Actividades</h3>
-        @if (tripWithActivities.activities?.length) {
-          <ul class="list-disc list-inside text-black/70">
-            @for (activity of tripWithActivities.activities; track activity.id) {
-              <li>
-                <span class="font-medium">{{ activity.description }}</span> —
-                {{ activity.location.locality }} ({{ activity.day }}
-                {{ activity.time_of_day === 'morning' ? 'Mañana' : activity.time_of_day === 'afternoon' ? 'Tarde' : 'Noche' }})
-              </li>
+                  </span>
+                }
+              </span>
             }
-          </ul>
-        } @else {
-          <p class="text-black/50 italic">No hay actividades registradas.</p>
-        }
-      </div>
-    </div>
+          </div>
 
-        <!-- Detalles del clima -->
-        <div class="w-full flex flex-col transition-all duration-500 overflow-hidden"
-            [ngClass]="expand ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'">
-            <app-details-weather-trip [tripId]="trip.id" [locations]="trip.locations"
-                [lastUpdated]="trip.last_weather_sync_at" (refresh)="onWeatherRefresh()">
-            </app-details-weather-trip>
+          @if(trip.transport) {
+            <div class="flex flex-row items-start gap-4">
+              <span class="flex text-black/75">
+                <mat-icon class="material-symbols-outlined">travel_explore</mat-icon>
+              </span>
+              <div class="flex flex-row gap-2">
+                <p class="font-semibold flex flex-row items-center gap-4">
+                  Transporte
+                  <span class="flex flex-row gap-2 items-center text-black/75">
+                    @for (type of trip.transport; track $index) {
+                      @if (type === 'bus') {
+                        <mat-icon class="material-symbols">directions_bus</mat-icon>
+                      }
+                      @if (type === 'plane') {
+                        <mat-icon class="material-symbols">flight</mat-icon>
+                      }
+                      @if (type === 'car') {
+                        <mat-icon class="material-symbols">directions_car</mat-icon>
+                      }
+                      @if (type === 'train') {
+                        <mat-icon class="material-symbols">train</mat-icon>
+                      }
+                    }
+                  </span>
+                </p>
+              </div>
+            </div>
+          }
         </div>
+
+        <div class="flex flex-row gap-4">
+          <span class="flex text-black/65">
+            <mat-icon class="material-symbols-outlined">location_on</mat-icon>
+          </span>
+          <div class="flex flex-row flex-wrap gap-x-2">
+            @for (location of trip.locations; track $index) {
+              @if ($index === trip.locations.length - 1) {
+                <p class="font-semibold">{{ location.locality }}</p>
+              } @else {
+                <p class="font-semibold">{{ location.locality }},</p>
+              }
+            }
+          </div>
+        </div>
+      </section>
+
+      <!-- Actividades -->
+      <div class="w-full transition-all duration-500 overflow-hidden"
+        [ngClass]="showActivities ? 'max-h-96 opacity-100 mt-4' : 'max-h-0 opacity-0'">
+        <div class="flex flex-col gap-2 bg-white/80 p-4 rounded-lg shadow-inner">
+          <h3 class="font-semibold text-black/85">Actividades</h3>
+          @if (tripWithActivities.activities?.length) {
+            <ul class="list-disc list-inside text-black/70">
+              @for (activity of tripWithActivities.activities; track activity.id) {
+                <li>
+                  <span class="font-medium">{{ activity.description }}</span> —
+                  {{ activity.location.locality }} ({{ activity.day }}
+                  {{ activity.time_of_day === 'morning' ? 'Mañana' : activity.time_of_day === 'afternoon' ? 'Tarde' : 'Noche' }})
+                </li>
+              }
+            </ul>
+          } @else {
+            <p class="text-black/50 italic">No hay actividades registradas.</p>
+          }
+        </div>
+      </div>
+
+      <!-- Detalles del clima -->
+      <div class="w-full flex flex-col transition-all duration-500 overflow-hidden"
+        [ngClass]="expand ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'">
+        <app-details-weather-trip [tripId]="trip.id" [locations]="trip.locations"
+          [lastUpdated]="trip.last_weather_sync_at" (refresh)="onWeatherRefresh()">
+        </app-details-weather-trip>
+      </div>
     </div>
 
     <!-- Botón expandir clima -->
     <button (click)="expandTrip()"
-        class="p-1 flex self-center cursor-pointer rounded-full hover:bg-neutral-400/50 transition-all duration-800 mt-1"
-        [ngClass]="expand ? 'rotate-180' : 'rotate-0'">
-        <mat-icon class="material-symbols-outlined text-emerald-600">expand_more</mat-icon>
+      class="p-1 flex self-center cursor-pointer rounded-full hover:bg-neutral-400/50 transition-all duration-800 mt-1"
+      [ngClass]="expand ? 'rotate-180' : 'rotate-0'">
+      <mat-icon class="material-symbols-outlined text-emerald-600">expand_more</mat-icon>
     </button>
-</div>
+  </div>
 }

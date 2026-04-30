@@ -3,7 +3,7 @@ import { debounceTime, switchMap } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
 import { UserService } from '../../../../../../services/user.service';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { TripUserService } from '../../../../../../services/trip-user.service';
 import { DialogService } from '../../../../../../services/dialog.service';
@@ -11,7 +11,7 @@ import { trigger, transition, style, animate } from '@angular/animations';
 
 @Component({
   selector: 'app-search-users',
-  imports: [MatIconModule, CommonModule, FormsModule],
+  imports: [MatIconModule, FormsModule],
   templateUrl: './search-users.component.html',
   styleUrl: './search-users.component.css',
   animations: [
