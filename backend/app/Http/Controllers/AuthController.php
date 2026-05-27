@@ -216,12 +216,13 @@ class AuthController extends Controller
                 'Lax'                   // sameSite
             );
 
-            return redirect("http://localhost:4200/auth/callback")
+            $frontendUrl = rtrim(env('FRONTEND_URL', 'http://localhost:4200'), '/');
+            return redirect("{$frontendUrl}/auth/callback")
                 ->withCookie($cookie);
 
         } catch (\Exception $e) {
-            // Error redirect sin exponer detalles sensibles
-            return redirect("http://localhost:4200/auth/err?err=googleAuthFailed");
+            $frontendUrl = rtrim(env('FRONTEND_URL', 'http://localhost:4200'), '/');
+            return redirect("{$frontendUrl}/auth/err?err=googleAuthFailed");
         }
     }
 }
