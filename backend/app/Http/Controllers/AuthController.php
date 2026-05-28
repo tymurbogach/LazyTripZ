@@ -151,11 +151,17 @@ class AuthController extends Controller
     }
 
     public function redirectToGoogle() {
-        return Socialite::driver('google')->stateless()->redirect();
+        $state = bin2hex(random_bytes(16));
+        cache()->put('oauth_state_' . $state, true, now()->addMinutes(10));
+        return Socialite::driver('google')->stateless()->with(['state' => $state])->redirect();
     }
 
     public function googleCallback() {
         try {
+            $state = request('state', '');
+            if (!$state || !cache()->pull('oauth_state_' . $state)) {
+                throw new \RuntimeException('Invalid or expired OAuth state');
+            }
             $googleUser = Socialite::driver('google')->stateless()->user();
 
             // 1.Obtengo la URL del avatar de Google
@@ -220,7 +226,8 @@ class AuthController extends Controller
             return redirect("{$frontendUrl}/auth/callback")
                 ->withCookie($cookie);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
+            \Log::error('Google OAuth failed: ' . get_class($e) . ': ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
             $frontendUrl = rtrim(env('FRONTEND_URL', 'http://localhost:4200'), '/');
             return redirect("{$frontendUrl}/auth/err?err=googleAuthFailed");
         }

@@ -38,6 +38,9 @@ services:
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
       GOOGLE_REDIRECT_URI: ${GOOGLE_REDIRECT_URI}
       FRONTEND_URL: ${FRONTEND_URL}
+      TRUSTED_PROXIES: ${TRUSTED_PROXIES}
+      SESSION_DOMAIN: ${SESSION_DOMAIN}
+      SESSION_SECURE_COOKIE: ${SESSION_SECURE_COOKIE:-true}
     volumes:
       - storage:/var/www/html/storage/app/public
     depends_on:
