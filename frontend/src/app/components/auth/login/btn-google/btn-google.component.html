@@ -2,7 +2,7 @@
              hover:bg-black/80 active:bg-black hover:text-white rounded-lg transition-all cursor-pointer shadow-lg bg-white/95">
     <img src="/google-icon.svg" alt="Icono Google" class="w-5 absolute left-4 top-1/2 -translate-y-1/2" />
     @if (isLoading) {
-        <app-auth-callback></app-auth-callback>
+        <app-spinner></app-spinner>
     } @else {
         Inicia sesión con Google
     }

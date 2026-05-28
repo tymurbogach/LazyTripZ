@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 
 import { AuthService } from '../../../../services/auth.service';
-import { AuthCallbackComponent } from '../auth-callback/auth-callback.component';
+import { SpinnerComponent } from '../../../utilities/spinner/spinner.component';
 
 @Component({
   selector: 'app-btn-google',
-  imports: [AuthCallbackComponent],
+  imports: [SpinnerComponent],
   templateUrl: './btn-google.component.html',
   styleUrl: './btn-google.component.css'
 })
@@ -17,7 +17,7 @@ export class BtnGoogleComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.isLoading = false;      
+    this.isLoading = false;
   }
 
   public login(): void {

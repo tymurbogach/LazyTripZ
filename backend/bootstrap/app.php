@@ -21,6 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
                      \Illuminate\Http\Request::HEADER_X_FORWARDED_PROTO |
                      \Illuminate\Http\Request::HEADER_X_FORWARDED_PREFIX,
         );
+        $middleware->encryptCookies(except: ['auth_token']);
         $middleware->alias([
             'trip.permission' => \App\Http\Middleware\CheckTripPermission::class,
         ]);

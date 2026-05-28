@@ -32,7 +32,7 @@ export class AppComponent implements OnInit {
       filter(e => e instanceof NavigationEnd)
     ).subscribe(() => {
       // Definir rutas donde no mostrar header/sidebar
-      const noLayoutRoutes = ['/auth/login', '/auth/registro'];
+      const noLayoutRoutes = ['/auth/login', '/auth/registro', '/auth/callback'];
       this.showLayout = !noLayoutRoutes.includes(this.router.url);
     });
   }

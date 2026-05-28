@@ -1,8 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 
+import { AuthService } from '../../../../services/auth.service';
+import { DialogService } from '../../../../services/dialog.service';
 import { SpinnerComponent } from '../../../utilities/spinner/spinner.component';
+import { Response } from '../../../../interfaces/response.interface';
 
 @Component({
   selector: 'app-auth-callback',
@@ -14,23 +17,33 @@ export class AuthCallbackComponent implements OnInit {
   constructor(
     private router: Router,
     private http: HttpClient,
+    private authService: AuthService,
+    private dialogService: DialogService,
   ) {}
 
   ngOnInit() {
-    // Leer token desde cookie (con withCredentials para enviar cookies)
     this.http.get<{ data: string }>('/api/auth/token-from-cookie', {
       withCredentials: true
     }).subscribe({
       next: (response) => {
         if (response?.data) {
           localStorage.setItem('authToken', response.data);
+          this.authService.profile().subscribe((userResp: Response<any>) => {
+            if (userResp.success && userResp.data?.must_set_password) {
+              this.dialogService.changePassword().then((res: any) => {
+                if (res.success && res.data) {
+                  this.authService.changePassword(res.data).subscribe();
+                }
+              });
+            }
+          });
           this.router.navigate(['/dashboard']);
         } else {
-          this.router.navigate(['/login']);
+          this.router.navigate(['/auth/login']);
         }
       },
       error: () => {
-        this.router.navigate(['/login']);
+        this.router.navigate(['/auth/login']);
       }
     });
   }
