@@ -151,12 +151,12 @@ class AuthController extends Controller
     }
 
     public function redirectToGoogle() {
-        return Socialite::driver('google')->redirect();
+        return Socialite::driver('google')->stateless()->redirect();
     }
 
     public function googleCallback() {
         try {
-            $googleUser = Socialite::driver('google')->user();
+            $googleUser = Socialite::driver('google')->stateless()->user();
 
             // 1.Obtengo la URL del avatar de Google
             $avatarUrl = $googleUser->getAvatar();
