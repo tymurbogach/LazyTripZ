@@ -75,8 +75,11 @@ class RecommendationController extends Controller
 
         // 6.Genero en paralelo para cada tipo de recomendación las llamadas con openAI y las inserciones en base de datos
         $new_types = $types->diff($existing_type_names);
+        $delay = 0;
         foreach ($new_types as $type) {
-            GenerateRecommendationsJob::dispatch($locations, $type, $trip->id);
+            GenerateRecommendationsJob::dispatch($locations, $type, $trip->id)
+                ->delay(now()->addSeconds($delay));
+            $delay += 4; // 15 RPM Gemini free tier → 1 req each 4s
         }
        
         return $this->sendResponse(true, 'Las recomendaciones se están generando. Serán visibles en cuanto estén listas.');

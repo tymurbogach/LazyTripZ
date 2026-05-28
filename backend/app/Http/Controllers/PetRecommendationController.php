@@ -122,8 +122,11 @@ class PetRecommendationController extends Controller
         })->all();
 
         // 7.Genero en paralelo para cada tipo de recomendación las llamadas con openAI y las inserciones en base de datos
+        $delay = 0;
         foreach ($new_types as $type) {
-            GeneratePetRecommendationsJob::dispatch($locations, $type, $trip->id, $pets_data);
+            GeneratePetRecommendationsJob::dispatch($locations, $type, $trip->id, $pets_data)
+                ->delay(now()->addSeconds($delay));
+            $delay += 4; // 15 RPM Gemini free tier → 1 req each 4s
         }
        
         return $this->sendResponse(true, 'Las recomendaciones sobre mascotas se están generando. Serán visibles en cuanto estén listas.');
