@@ -1,8 +1,8 @@
-import { Component, EventEmitter, HostListener, Output, OnInit } from '@angular/core';
+import { Component, DestroyRef, EventEmitter, HostListener, inject, OnInit, Output } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-
 import { User } from '../../interfaces/response.interface';
 import { Router } from '@angular/router';
 import { DialogService } from '../../services/dialog.service';
@@ -22,27 +22,26 @@ export class HeaderComponent implements OnInit {
 
   @Output() SidenavOpened = new EventEmitter<Event>();
 
+  private destroyRef = inject(DestroyRef);
+
   constructor(
     private authService: AuthService,
     private router: Router,
     private dialogService: DialogService
-  ){
+  ) {
     this.updateViewportSize();
   }
 
   ngOnInit() {
     this.loadUserData();
-    console.log(this.userData?.avatar_url)
   }
 
   loadUserData() {
-    this.authService.profile().subscribe({
+    this.authService.profile().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (response) => {
         this.userData = response.data;
       },
-      error: (error) => {
-        console.error('Error loading user data:', error);
-      }
+      error: () => {}
     });
   }
 
@@ -52,8 +51,7 @@ export class HeaderComponent implements OnInit {
     this.isMobile = width < 425;
     this.isTablet = width <= 768;
     if (this.isMobile || this.isTablet) {
-        this.isSidenavOpen = !this.isSidenavOpen;
-        this.isSidenavOpen = false;
+      this.isSidenavOpen = false;
     }
   }
 
@@ -64,20 +62,19 @@ export class HeaderComponent implements OnInit {
   closeSidenav() {
     this.isSidenavOpen = false;
   }
-  
-  logout(){
-    this.authService.logout().subscribe({
+
+  logout() {
+    this.authService.logout().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (response: any) => {
         if (response.success) {
           localStorage.removeItem('authToken');
           this.dialogService.success('Hasta la próxima!');
           this.router.navigate(['/auth/login']);
-
         } else {
           this.dialogService.error('Error al cerrar sesión');
         }
       },
-      error: (err) => {
+      error: () => {
         this.dialogService.error('Error en la conexión con el servidor');
       }
     });

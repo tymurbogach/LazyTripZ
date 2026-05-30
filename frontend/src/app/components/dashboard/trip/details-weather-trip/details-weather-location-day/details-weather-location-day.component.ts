@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { WeatherForecastDay } from '../../../../../interfaces/response.interface';
 import { WeatherIconService } from '../../../../../services/weather-icon.service';
@@ -8,7 +8,8 @@ import { MatIconModule } from '@angular/material/icon';
   selector: 'app-details-weather-location-day',
   imports: [CommonModule, MatIconModule],
   templateUrl: './details-weather-location-day.component.html',
-  styleUrl: './details-weather-location-day.component.css'
+  styleUrl: './details-weather-location-day.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DetailsWeatherLocationDayComponent {
   @Input() weatherForecast?: WeatherForecastDay;

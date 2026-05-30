@@ -63,8 +63,6 @@ export class AddDiaryModalComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log('Modal inicializado');
-    console.log('isOpen:', this.isOpen);
     this.loadTrips();
   }
 
@@ -128,17 +126,8 @@ export class AddDiaryModalComponent implements OnInit {
         formData.append('image', this.selectedImage);
       }
 
-      // Verificar que los datos se han añadido correctamente
-      console.log('FormData contenido:');
-      for (let pair of formData.entries()) {
-        console.log(pair[0], pair[1]);
-      }
-
       this.diaryAdded.emit(formData);
       this.closeModal();
-    } else {
-      console.log('Formulario inválido:', this.diaryForm.errors);
-      console.log('Valores del formulario:', this.diaryForm.value);
     }
   }
 

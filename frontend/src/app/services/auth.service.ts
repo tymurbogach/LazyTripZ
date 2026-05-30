@@ -32,10 +32,6 @@ export class AuthService {
     window.location.href = `${this.serverUrl}/auth/google`;
   }
 
-  googleCallback(): Observable<Response<any>> {
-    return this.http.get<Response<any>>(`${this.serverUrl}/auth/google/callback`);
-  }
-
   logout(): Observable<Response<any>> {
     return this.http.post<Response<any>>(`${this.serverUrl}/api/auth/logout`, {});
   }

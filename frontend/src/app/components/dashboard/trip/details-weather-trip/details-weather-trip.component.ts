@@ -36,9 +36,8 @@ export class DetailsWeatherTripComponent implements OnInit {
           this.refresh.emit(); 
           this.isLoading = false;
         },
-        error: (error) => {
+        error: () => {
           this.isLoading = false;
-          console.error('Error refreshing weather forecasts:', error);
         }
       });
     }

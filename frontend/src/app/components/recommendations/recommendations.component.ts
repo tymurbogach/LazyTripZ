@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, DestroyRef, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { ActivatedRoute, Router } from '@angular/router';
 import { trigger, transition, style, animate } from '@angular/animations';
@@ -37,6 +38,8 @@ export class RecommendationsComponent implements OnInit {
   public dog = faDog;
   public cat = faCat;
 
+  private destroyRef = inject(DestroyRef);
+
   constructor(
     private recommendationService: RecommendationService,
     private tripService: TripService,
@@ -45,10 +48,10 @@ export class RecommendationsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.route.paramMap.subscribe(params => {
+    this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
       const tripId = params.get('tripId');
       this.tripName = params.get('tripName') || '';
-      
+
       if (!tripId) {
         this.error = 'No se especificó un ID de viaje';
         return;
@@ -85,62 +88,60 @@ export class RecommendationsComponent implements OnInit {
     this.isLoading = true;
     this.error = null;
 
-    this.recommendationService.getRecommendationsTypesFromTrip(tripId).subscribe({
-      next: (response: Response<any[]>) => {
-        this.isLoading = false;
-        if (response.success) {
-          this.recommendationTypes = response.data;
-          
-          this.recommendationTypes.forEach(category => {
-            this.expandedCategories.add(category.name);
-          });
-        } else {
-          this.error = response.message || 'Error al cargar las recomendaciones del viaje';
+    this.recommendationService.getRecommendationsTypesFromTrip(tripId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (response: Response<any[]>) => {
+          this.isLoading = false;
+          if (response.success) {
+            this.recommendationTypes = response.data;
+            this.recommendationTypes.forEach(category => {
+              this.expandedCategories.add(category.name);
+            });
+          } else {
+            this.error = response.message || 'Error al cargar las recomendaciones del viaje';
+          }
+        },
+        error: (err) => {
+          this.isLoading = false;
+          this.error = 'Error en la conexión con el servidor';
         }
-      },
-      error: (err) => {
-        console.error('API Error:', err);
-        this.isLoading = false;
-        this.error = 'Error en la conexión con el servidor';
-        if (err.status === 401) {
-          this.router.navigate(['/auth/login']);
-        }
-      }
-    });
+      });
 
-    this.tripService.getRecommendationsTrip(tripId).subscribe({
-      next: (response: Response<any[]>) => {
-        this.isLoading = false;
-        if (response.success) {
-          this.recommendations = response.data; 
-        } else {
-          this.error = response.message || 'Error al cargar las recomendaciones del viaje';
+    this.tripService.getRecommendationsTrip(tripId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (response: Response<any[]>) => {
+          this.isLoading = false;
+          if (response.success) {
+            this.recommendations = response.data;
+          } else {
+            this.error = response.message || 'Error al cargar las recomendaciones del viaje';
+          }
+        },
+        error: () => {
+          this.isLoading = false;
+          this.error = 'Error en la conexión con el servidor';
         }
-      },
-      error: (err) => {
-        this.isLoading = false;
-        this.error = 'Error en la conexión con el servidor';
-        if (err.status === 401) {
-          this.router.navigate(['/auth/login']);
-        }
-      }
-    });
+      });
 
-    this.tripService.getPetRecommendationsTrip(tripId).subscribe({
-      next: (response: Response<any[]>) => {
-        this.isLoading = false;
-        if (response.success) {
-          this.pet_recommendations = response.data;
-        } else {
-          this.error = response.message || 'Error al cargar las recomendaciones de mascotas del viaje';
-        }
-      },
-    });
+    this.tripService.getPetRecommendationsTrip(tripId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (response: Response<any[]>) => {
+          this.isLoading = false;
+          if (response.success) {
+            this.pet_recommendations = response.data;
+          } else {
+            this.error = response.message || 'Error al cargar las recomendaciones de mascotas del viaje';
+          }
+        },
+      });
   }
 
   getPetIcon(pet: string): IconProp {
-      if (pet === 'dog') return this.dog as IconProp;
-      if (pet === 'cat') return this.cat as IconProp;
-      return 'question' as IconProp;
+    if (pet === 'dog') return this.dog as IconProp;
+    if (pet === 'cat') return this.cat as IconProp;
+    return 'question' as IconProp;
   }
 }

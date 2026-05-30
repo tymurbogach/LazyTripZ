@@ -210,7 +210,6 @@ export class TripService {
     return this.http.request('delete', `${this.serverUrl}/api/trip/${tripId}/pet_recommendations`);
   }
 
-  getDiaries(tripId: number){}
-
 }
+
 

@@ -1,5 +1,62 @@
 <section class="h-full grid grid-rows-[auto_1fr] overflow-hidden">
-    <h1 class="font-bold text-3xl text-center mt-6 mb-2">Tus pr&oacute;ximos viajes</h1>
+    <div class="flex flex-col gap-3 px-4 pt-6 pb-3 sm:px-18 md:px-16 lg:px-28">
+        <h1 class="font-bold text-3xl text-center">Tus viajes</h1>
+
+        <!-- Buscador -->
+        <div class="relative">
+            <mat-icon class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">search</mat-icon>
+            <input
+                type="text"
+                [(ngModel)]="searchQuery"
+                placeholder="Buscar viaje o destino..."
+                class="w-full pl-10 pr-4 py-2 rounded-xl border border-gray-300 bg-white/80 shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400 transition-all text-sm"
+            />
+        </div>
+
+        <!-- Filtros de estado -->
+        <div class="flex gap-2 flex-wrap">
+            <button
+                (click)="setFilter('all')"
+                [class.font-bold]="statusFilter === 'all'"
+                [class.bg-gray-800]="statusFilter === 'all'"
+                [class.text-white]="statusFilter === 'all'"
+                [class.bg-white]="statusFilter !== 'all'"
+                [class.text-gray-600]="statusFilter !== 'all'"
+                class="px-3 py-1 rounded-full text-xs border border-gray-300 shadow-sm transition-all duration-150 hover:bg-gray-700 hover:text-white cursor-pointer">
+                Todos ({{ filterCounts.all }})
+            </button>
+            <button
+                (click)="setFilter('upcoming')"
+                [class.font-bold]="statusFilter === 'upcoming'"
+                [class.bg-blue-600]="statusFilter === 'upcoming'"
+                [class.text-white]="statusFilter === 'upcoming'"
+                [class.bg-white]="statusFilter !== 'upcoming'"
+                [class.text-blue-700]="statusFilter !== 'upcoming'"
+                class="px-3 py-1 rounded-full text-xs border border-blue-300 shadow-sm transition-all duration-150 hover:bg-blue-600 hover:text-white cursor-pointer">
+                Próximos ({{ filterCounts.upcoming }})
+            </button>
+            <button
+                (click)="setFilter('active')"
+                [class.font-bold]="statusFilter === 'active'"
+                [class.bg-green-600]="statusFilter === 'active'"
+                [class.text-white]="statusFilter === 'active'"
+                [class.bg-white]="statusFilter !== 'active'"
+                [class.text-green-700]="statusFilter !== 'active'"
+                class="px-3 py-1 rounded-full text-xs border border-green-300 shadow-sm transition-all duration-150 hover:bg-green-600 hover:text-white cursor-pointer">
+                En curso ({{ filterCounts.active }})
+            </button>
+            <button
+                (click)="setFilter('past')"
+                [class.font-bold]="statusFilter === 'past'"
+                [class.bg-gray-500]="statusFilter === 'past'"
+                [class.text-white]="statusFilter === 'past'"
+                [class.bg-white]="statusFilter !== 'past'"
+                [class.text-gray-600]="statusFilter !== 'past'"
+                class="px-3 py-1 rounded-full text-xs border border-gray-300 shadow-sm transition-all duration-150 hover:bg-gray-500 hover:text-white cursor-pointer">
+                Pasados ({{ filterCounts.past }})
+            </button>
+        </div>
+    </div>
 
     <div class="relative flex-1 min-h-[300px] overflow-y-auto scrollbar-hide">
         @if(isLoading) {
@@ -10,18 +67,23 @@
 
         <div class="min-h-0 w-full p-2 pb-6 mx-auto sm:px-18 md:px-16 lg:px-28 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 2xl:grid-cols-3 sm:gap-4 lg:gap-8 transition-opacity duration-300"
             [class.opacity-50]="isLoading">
-            @if(trips.length === 0 && !isLoading) {
+            @if(filteredTrips.length === 0 && !isLoading) {
                 <div class="col-span-full flex flex-col items-center justify-center text-black min-h-[60vh] h-full w-full">
-                    <span class="text-xl font-semibold mb-4">No hay viajes disponibles</span>
-                    <div class="flex-1 flex items-center justify-center w-full">
-                        <img src="./notrip.png" alt="" class="max-h-[400px] w-full max-w-xl object-contain mx-auto">
-                    </div>
+                    @if(searchQuery || statusFilter !== 'all') {
+                        <span class="text-xl font-semibold mb-2">Sin resultados</span>
+                        <span class="text-gray-500 text-sm">Prueba con otro filtro o búsqueda</span>
+                    } @else {
+                        <span class="text-xl font-semibold mb-4">No hay viajes disponibles</span>
+                        <div class="flex-1 flex items-center justify-center w-full">
+                            <img src="./notrip.png" alt="" class="max-h-[400px] w-full max-w-xl object-contain mx-auto">
+                        </div>
+                    }
                 </div>
             } @else {
-                @for(trip of trips; track trip.id) {
-                    <app-trip 
-                      [trip]="trip" 
-                      (deleteEvent)="onTripDeleted()" 
+                @for(trip of filteredTrips; track trip.id) {
+                    <app-trip
+                      [trip]="trip"
+                      (deleteEvent)="onTripDeleted()"
                       (updateEvent)="onTripChanged()"
                       (refreshEvent)="onTripChanged()"
                     >
