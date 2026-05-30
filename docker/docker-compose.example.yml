@@ -31,7 +31,7 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
       QUEUE_CONNECTION: database
       GEMINI_API_KEY: ${GEMINI_API_KEY}
-      GEMINI_MODEL: gemini-2.0-flash
+      GEMINI_MODEL: gemini-2.5-flash
       OPENWEATHER_API_KEY: ${OPENWEATHER_API_KEY}
       OPENWEATHER_API_URL: ${OPENWEATHER_API_URL}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
@@ -64,7 +64,7 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
       QUEUE_CONNECTION: database
       GEMINI_API_KEY: ${GEMINI_API_KEY}
-      GEMINI_MODEL: gemini-2.0-flash
+      GEMINI_MODEL: gemini-2.5-flash
     volumes:
       - storage:/var/www/html/storage/app/public
     depends_on:
