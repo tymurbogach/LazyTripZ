@@ -1,4 +1,4 @@
-# AGENTS.md - LazyTrip
+# AGENTS.md - LazyTripZ
 
 ## Quick start
 

@@ -1,28 +1,28 @@
 #!/bin/bash
 
-# 🚀 Deploy LazyTrip en Raspberry Pi
+# 🚀 Deploy LazyTripZ en Raspberry Pi
 
-STACK_PATH="/home/pi/docker/stacks/lazytrip"
+STACK_PATH="/home/pi/docker/stacks/lazytripz"
 APP_PATH="/home/pi/docker/appdata"
-REPO_URL="https://github.com/TimurTwerKing/lazytrip.git"
+REPO_URL="https://github.com/TimurTwerKing/lazytripz.git"
 
 echo "🔄 Iniciando actualización en $APP_PATH..."
 
 cd "$APP_PATH" || { echo "❌ Error: No se encuentra $APP_PATH"; exit 1; }
 
 # Clonar limpio o hacer pull si ya existe
-if [ -d "lazytrip" ]; then
+if [ -d "lazytripz" ]; then
     echo "📥 Actualizando código existente..."
-    cd lazytrip && git pull && cd ..
+    cd lazytripz && git pull && cd ..
 else
     echo "📥 Clonando repositorio..."
-    git clone "$REPO_URL" lazytrip
+    git clone "$REPO_URL" lazytripz
 fi
 
 # Copiar config de nginx al stack si no existe
-if [ ! -f "$STACK_PATH/lazytrip.conf" ]; then
+if [ ! -f "$STACK_PATH/lazytripz.conf" ]; then
     echo "📋 Copiando nginx.conf al stack..."
-    cp "$APP_PATH/lazytrip/docker/nginx/lazytrip.conf" "$STACK_PATH/lazytrip.conf"
+    cp "$APP_PATH/lazytripz/docker/nginx/lazytripz.conf" "$STACK_PATH/lazytripz.conf"
 fi
 
 echo "🧱 Construyendo imágenes y reiniciando contenedores..."
@@ -47,5 +47,5 @@ docker compose exec -T backend php artisan storage:link
 echo "🧹 Limpiando imágenes antiguas..."
 docker image prune -f
 
-echo "✅ LazyTrip desplegado correctamente."
+echo "✅ LazyTripZ desplegado correctamente."
 echo "🌐 Accede desde http://$(hostname -I | awk '{print $1}'):8081"

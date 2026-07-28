@@ -1,4 +1,4 @@
-# LazyTrip — Resumen técnico del proyecto
+# LazyTripZ — Resumen técnico del proyecto
 
 ## ¿Qué es?
 
