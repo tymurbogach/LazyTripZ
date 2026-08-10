@@ -10,7 +10,7 @@ class RecommendationService
     private function callGemini(string $prompt, array $responseSchema)
     {
         $apiKey = config('services.gemini.key');
-        $model  = config('services.gemini.model', 'gemini-1.5-flash');
+        $model  = config('services.gemini.model');
         $url    = "https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key={$apiKey}";
 
         $response = Http::post($url, [
