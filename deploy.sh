@@ -4,7 +4,7 @@
 
 STACK_PATH="/home/pi/docker/stacks/lazytripz"
 APP_PATH="/home/pi/docker/appdata"
-REPO_URL="https://github.com/TimurTwerKing/lazytripz.git"
+REPO_URL="https://github.com/tymurbogach/lazytripz.git"
 
 echo "🔄 Iniciando actualización en $APP_PATH..."
 
