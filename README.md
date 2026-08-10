@@ -128,15 +128,17 @@ SPA talks to the API on a single origin — same as in production behind nginx.
 ## Docker
 
 ```bash
-cp docker/.env.example .env      # fill in real values
 cp docker/docker-compose.example.yml docker-compose.yml
-docker compose up -d --build
-docker compose exec backend php artisan migrate --force
+cp docker/.env.example .env      # fill in real values
+./deploy.sh
 ```
 
+`deploy.sh` builds the images, starts the stack, waits for MariaDB, runs migrations and caches
+config and routes. Use `./deploy.sh --no-pull` to rebuild without touching git, or drive
+`docker compose` directly if you prefer.
+
 nginx fronts everything on one origin (`:8081`), routing `/api`, `/auth` and `/storage` to
-Laravel and everything else to the Angular build. `deploy.sh` is the deployment script used on
-a Raspberry Pi host.
+Laravel and everything else to the Angular build.
 
 ---
 

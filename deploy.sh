@@ -1,51 +1,64 @@
-#!/bin/bash
+#!/usr/bin/env bash
+#
+# Despliega LazyTripZ con Docker Compose.
+#
+# Uso:
+#   ./deploy.sh              # pull + build + up + migrate
+#   ./deploy.sh --no-pull    # no toca git, solo reconstruye y arranca
+#
+# Requisitos previos (una sola vez):
+#   cp docker/docker-compose.example.yml docker-compose.yml
+#   cp docker/.env.example .env      # y rellenar los valores reales
+#
+set -euo pipefail
 
-# 🚀 Deploy LazyTripZ en Raspberry Pi
+cd "$(dirname "$0")"
 
-STACK_PATH="/home/pi/docker/stacks/lazytripz"
-APP_PATH="/home/pi/docker/appdata"
-REPO_URL="https://github.com/tymurbogach/lazytripz.git"
+COMPOSE_FILE="${COMPOSE_FILE:-docker-compose.yml}"
+ENV_FILE="${ENV_FILE:-.env}"
+PULL=true
+[ "${1:-}" = "--no-pull" ] && PULL=false
 
-echo "🔄 Iniciando actualización en $APP_PATH..."
+log()  { printf '\033[0;34m→\033[0m %s\n' "$*"; }
+ok()   { printf '\033[0;32m✓\033[0m %s\n' "$*"; }
+die()  { printf '\033[0;31m✗\033[0m %s\n' "$*" >&2; exit 1; }
 
-cd "$APP_PATH" || { echo "❌ Error: No se encuentra $APP_PATH"; exit 1; }
+command -v docker >/dev/null || die "docker no está instalado"
+docker compose version >/dev/null 2>&1 || die "se necesita el plugin 'docker compose'"
+[ -f "$COMPOSE_FILE" ] || die "falta $COMPOSE_FILE — copia docker/docker-compose.example.yml"
+[ -f "$ENV_FILE" ]     || die "falta $ENV_FILE — copia docker/.env.example"
 
-# Clonar limpio o hacer pull si ya existe
-if [ -d "lazytripz" ]; then
-    echo "📥 Actualizando código existente..."
-    cd lazytripz && git pull && cd ..
-else
-    echo "📥 Clonando repositorio..."
-    git clone "$REPO_URL" lazytripz
+compose() { docker compose -f "$COMPOSE_FILE" --env-file "$ENV_FILE" "$@"; }
+
+if [ "$PULL" = true ] && [ -d .git ]; then
+    log "Actualizando código..."
+    git pull --ff-only
+    ok "En $(git rev-parse --short HEAD)"
 fi
 
-# Copiar config de nginx al stack si no existe
-if [ ! -f "$STACK_PATH/lazytripz.conf" ]; then
-    echo "📋 Copiando nginx.conf al stack..."
-    cp "$APP_PATH/lazytripz/docker/nginx/lazytripz.conf" "$STACK_PATH/lazytripz.conf"
-fi
+log "Construyendo imágenes..."
+compose build
 
-echo "🧱 Construyendo imágenes y reiniciando contenedores..."
-cd "$STACK_PATH" || { echo "❌ Error: No se encuentra $STACK_PATH"; exit 1; }
+log "Levantando servicios..."
+compose up -d
 
-docker compose build --no-cache
-docker compose down --remove-orphans
-docker compose up -d --force-recreate
+log "Esperando a la base de datos..."
+for i in $(seq 1 40); do
+    if compose exec -T db mariadb-admin ping -h localhost --silent >/dev/null 2>&1; then
+        ok "Base de datos lista"; break
+    fi
+    [ "$i" -eq 40 ] && die "timeout esperando a la base de datos"
+    sleep 3
+done
 
-# Esperar a que MariaDB arranque
-echo "⏳ Esperando a que la base de datos esté lista..."
-sleep 10
+log "Ejecutando migraciones..."
+compose exec -T backend php artisan migrate --force
 
-# Migraciones y storage link
-echo "🗄️  Ejecutando migraciones..."
-docker compose exec -T backend php artisan migrate --force
+# storage:link falla si el enlace ya existe; no es motivo para abortar
+compose exec -T backend php artisan storage:link >/dev/null 2>&1 || true
 
-echo "🔗 Creando storage:link..."
-docker compose exec -T backend php artisan storage:link
+log "Cacheando configuración y rutas..."
+compose exec -T backend php artisan config:cache >/dev/null
+compose exec -T backend php artisan route:cache  >/dev/null
 
-# Limpiar imágenes huérfanas
-echo "🧹 Limpiando imágenes antiguas..."
-docker image prune -f
-
-echo "✅ LazyTripZ desplegado correctamente."
-echo "🌐 Accede desde http://$(hostname -I | awk '{print $1}'):8081"
+ok "LazyTripZ desplegado — http://localhost:8081"

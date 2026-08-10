@@ -129,14 +129,17 @@ forma que la SPA habla con la API en un único origen — igual que en producci�
 ## Docker
 
 ```bash
-cp docker/.env.example .env      # rellena los valores reales
 cp docker/docker-compose.example.yml docker-compose.yml
-docker compose up -d --build
-docker compose exec backend php artisan migrate --force
+cp docker/.env.example .env      # rellena los valores reales
+./deploy.sh
 ```
 
+`deploy.sh` construye las imágenes, levanta el stack, espera a MariaDB, ejecuta las migraciones
+y cachea configuración y rutas. Con `./deploy.sh --no-pull` reconstruye sin tocar git, o usa
+`docker compose` directamente si lo prefieres.
+
 nginx expone todo en un único origen (`:8081`) y enruta `/api`, `/auth` y `/storage` a Laravel
-y el resto al build de Angular. `deploy.sh` es el script de despliegue usado en una Raspberry Pi.
+y el resto al build de Angular.
 
 ---
 
