@@ -1,18 +1,26 @@
 # Frontend — Angular 21 SPA
 
-## Arranque desde cero
-```bash
-# IMPORTANTE: no usar npm install normal, hay conflicto de peer deps
-npm install --legacy-peer-deps
+Solo lo específico del frontend. Setup general y convenciones comunes están en
+[`../CLAUDE.md`](../CLAUDE.md) — no se repiten aquí.
 
-# ng no está en PATH global, usar siempre npx
-npx ng serve    # http://localhost:4200
+## Trampas de arranque
+
+```bash
+npm install --legacy-peer-deps   # sin el flag falla por conflicto de peer deps
+npx ng serve                     # ng no está en PATH global
 ```
 
-## Templates
-- Se usa block control flow (`@if`, `@for`, `@else`) — NO usar `*ngIf`/`*ngFor` (migrado en Angular 21)
+## Comunicación con la API
+
+Los servicios usan **rutas relativas** (`serverUrl = ''`, p. ej. `/api/user/trips`), no una URL
+absoluta al backend. Esto es deliberado: en producción nginx sirve SPA y API en el mismo origen.
+
+En desarrollo eso lo resuelve `proxy.conf.json`, enganchado al target `serve` de `angular.json`,
+que redirige `/api`, `/auth` y `/storage` a `http://localhost:8000`. **Si tocas el proxy o la
+URL base, comprueba que ambos entornos siguen funcionando.**
 
 ## Estructura
+
 ```
 src/app/
 ├── components/
@@ -30,7 +38,7 @@ src/app/
 │       ├── input/         — input personalizado
 │       ├── spinner/       — loading indicator
 │       ├── btn-show-passwd/
-│       └── search-google-places/
+│       └── search-google-places/  — búsqueda de ciudades vía Nominatim
 ├── services/              — lógica de negocio y llamadas API
 ├── guards/                — auth.guard.ts protege rutas privadas
 ├── interfaces/            — tipos TypeScript
@@ -38,36 +46,39 @@ src/app/
 ```
 
 ## Convenciones
+
 - Componentes standalone (sin NgModules)
 - Servicios inyectados via `inject()` o constructor
 - No usar `any` en TypeScript salvo casos justificados y comentados
-- Ignorar archivos `*.Zone.Identifier` — metadatos de Windows/WSL sin utilidad
+- Templates: block control flow (`@if`, `@for`, `@else`) — NO `*ngIf`/`*ngFor`
 
 ## Autenticación
-- Interceptor `auth.interceptor.ts` añade Bearer token a cada request automáticamente
-- Guard `auth.guard.ts` protege todas las rutas privadas
+
+- `auth.interceptor.ts` añade el Bearer token a cada request automáticamente
+- `auth.guard.ts` protege las rutas privadas
 - Callback de Google OAuth en `auth-callback.component.ts`
 
 ## Servicios principales
+
 ```
-auth.service.ts          — login, register, logout, google oauth
-trip.service.ts          — CRUD de viajes
-trip-user.service.ts     — gestión de usuarios en viaje
-user.service.ts          — perfil y datos de usuario
+auth.service.ts           — login, register, logout, google oauth
+trip.service.ts           — CRUD de viajes
+trip-user.service.ts      — gestión de usuarios en viaje y permisos
+user.service.ts           — perfil y datos de usuario
 recommendation.service.ts — recomendaciones IA
-diary.service.ts         — diario de viaje
-dialog.service.ts        — diálogos globales (error, confirm, info)
-error-input.service.ts   — manejo de errores de formulario
-weather-icon.service.ts  — mapeo de códigos de clima a iconos
+diary.service.ts          — diario de viaje
+dialog.service.ts         — diálogos globales (error, confirm, info)
+error-input.service.ts    — manejo de errores de formulario
+weather-icon.service.ts   — mapeo de códigos de clima a iconos
 ```
 
-## API
-- Backend en `http://localhost:8000/api`
-- Todas las peticiones autenticadas llevan `Authorization: Bearer {token}`
-- Estructura de respuesta esperada: `{ data: ..., message: ... }`
+## Permisos en UI
 
-## Notas Docker (pendiente)
-- Imagen base: node:20-alpine
-- Build: `npm install --legacy-peer-deps && npx ng build`
-- Servir build con nginx
-- Variable de entorno para URL del backend en producción
+`getPermissionUserFromTrip` devuelve `'admin'` o `'user'`. La UI solo restringe a admin la
+edición/borrado del viaje y la gestión de miembros; el resto de acciones están abiertas a
+cualquier miembro. El backend aplica la misma regla — si endureces una, endurece la otra.
+
+## Docker
+
+`../docker/`: build con `node:20-alpine` (`npm install --legacy-peer-deps && npx ng build`),
+resultado servido por nginx.

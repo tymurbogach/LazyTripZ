@@ -1,45 +1,10 @@
 # Backend — Laravel 13 API
 
-## Arranque desde cero
-```bash
-# 1. Dependencias PHP
-composer install
-
-# 2. Entorno
-cp .env.example .env
-php artisan key:generate
-
-# 3. Base de datos — MariaDB debe estar corriendo
-sudo service mariadb start
-
-# Crear DB la primera vez (solo una vez):
-sudo mariadb
-# Dentro del prompt:
-# CREATE DATABASE projectbackend;
-# CREATE USER 'laravel'@'localhost' IDENTIFIED BY 'password';
-# GRANT ALL PRIVILEGES ON projectbackend.* TO 'laravel'@'localhost';
-# FLUSH PRIVILEGES;
-# EXIT;
-
-# 4. Migrar y sembrar
-php artisan migrate --seed
-
-# 5. Arrancar
-php artisan serve        # http://localhost:8000
-php artisan queue:work   # terminal separada, necesario para recomendaciones IA
-```
-
-## Configuración .env crítica
-```env
-DB_CONNECTION=mariadb    # importante: mariadb, no mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=projectbackend
-DB_USERNAME=laravel
-DB_PASSWORD=password
-```
+Solo lo específico del backend. Setup, stack, variables de entorno y reglas de autorización
+están en [`../CLAUDE.md`](../CLAUDE.md) — no se repiten aquí.
 
 ## Estructura
+
 ```
 app/
 ├── Http/
@@ -48,37 +13,53 @@ app/
 │   └── Requests/      — validación de entrada (FormRequests)
 ├── Jobs/              — GenerateRecommendationsJob, GeneratePetRecommendationsJob
 ├── Models/            — Eloquent con relaciones definidas
-├── Policies/          — autorización por recurso
+├── Policies/          — solo TripPolicy
 ├── Providers/         — AppServiceProvider, AuthServiceProvider
-└── Services/          — RecommendationService, WeatherForecastService
+└── Services/          — RecommendationService, WeatherForecastService, WeatherSyncService
 ```
 
 ## Convenciones
-- Respuestas siempre en JSON: `response()->json(['data' => ..., 'message' => ...])`
-- Autorización via `$this->authorize()` en controllers usando Policies
+
+- Respuestas siempre en JSON vía el helper `sendResponse()` de `Controller`
+  (fan-in alto: lo usan casi todos los controllers)
 - Validación via FormRequests en `app/Http/Requests/`
 - Migraciones con nombre descriptivo y timestamp
 
-## Autenticación
-- Laravel Passport (OAuth2) para tokens API
-- Laravel Socialite para Google OAuth
-- Middleware `auth:api` en rutas protegidas
-- `CheckTripPermission` middleware para permisos de viaje
+## Autorización
+
+`AuthServiceProvider` registra **solo** `Trip => TripPolicy`. No añadir policies nuevas para
+recursos de viaje: la autorización de todo lo que cuelga de un viaje se hace con el middleware
+`trip.permission` aplicado a nivel de grupo en `routes/api.php`.
+
+Contexto: existían 7 policies más generadas con `make:policy` que devolvían `false` en todos
+los métodos y referenciaban modelos inexistentes (`Pet_Recomendation`, `Recommendation_Type`).
+Se borraron. Si vuelves a crear una con `make:policy`, Laravel la autodetectará por nombre y
+denegará todo silenciosamente.
+
+## Servicios
+
+- `RecommendationService::callGemini()` — **único** punto de integración con Gemini. Llama a
+  `v1beta` por HTTP con `responseSchema`, que fuerza JSON válido en la respuesta
+- `WeatherForecastService` / `WeatherSyncService` — OpenWeatherMap por coordenadas
 
 ## Base de datos
-- Motor: MariaDB
-- Esquema completo disponible en `schema.sql`
-- Seeders disponibles para todos los modelos
-- Arrancar MariaDB antes de cualquier operación: `sudo service mariadb start`
 
-## Extensiones PHP requeridas
-```
-php8.3-xml php8.3-mysql php8.3-mbstring php8.3-curl php8.3-zip php8.3-bcmath php8.3-tokenizer
-```
+- Motor: MariaDB en desarrollo y producción
+- Los **tests** usan SQLite en memoria (configurado en `phpunit.xml`), así que
+  `php artisan test` no necesita MariaDB arrancada ni toca tu BD de desarrollo
+- Esquema de referencia en `schema.sql`
+- Seeders para todos los modelos; `DatabaseSeeder` solo invoca `RecommendationTypeSeeder`
 
-## Notas Docker (pendiente)
-- Imagen base: php:8.3-fpm
-- Nginx como proxy reverso
-- MariaDB como servicio separado
-- Queue worker como servicio separado (mismo imagen, comando diferente)
-- Volumen para `storage/` y `public/avatars/`
+## Tests
+
+`tests/Feature/TripAuthorizationTest.php` es el único test real y cubre la regresión de
+autorización a nivel de objeto. Usa `Passport::actingAs()` — no `actingAs($user, 'api')`, que
+requiere claves de firma reales y falla con `Invalid key supplied`.
+
+El resto (`ExampleTest.php`) es scaffolding por defecto.
+
+## Docker
+
+El stack está en `../docker/`: `php:8.3-fpm` para el backend, nginx como proxy inverso,
+MariaDB como servicio aparte y el queue worker como servicio propio (misma imagen, comando
+distinto). Volúmenes para `storage/` y `public/avatars/`.

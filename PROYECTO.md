@@ -10,10 +10,10 @@ Planificador de viajes con IA. El usuario crea viajes con múltiples destinos y 
 
 | Capa | Tecnología |
 |------|------------|
-| Backend | Laravel 11 + Passport OAuth2 |
-| Frontend | Angular 19 (standalone components) |
+| Backend | Laravel 13 + Passport OAuth2 |
+| Frontend | Angular 21 (standalone components) |
 | Base de datos | MariaDB |
-| IA | Google Gemini 2.0 Flash (via HTTP directo) |
+| IA | Google Gemini 2.5 Flash (via HTTP directo) |
 | Clima | OpenWeatherMap API |
 | Geocodificación | Nominatim / OpenStreetMap (gratuito) |
 | Auth social | Google OAuth (Socialite) |
@@ -26,8 +26,8 @@ Planificador de viajes con IA. El usuario crea viajes con múltiples destinos y 
 
 ```
 Monorepo
-├── backend/    Laravel 11 API REST — puerto 8000
-└── frontend/   Angular 19 SPA     — puerto 4200
+├── backend/    Laravel 13 API REST — puerto 8000
+└── frontend/   Angular 21 SPA     — puerto 4200
 ```
 
 La API es completamente stateless: cada request lleva un Bearer token emitido por Passport. El frontend nunca maneja sesiones.
@@ -106,7 +106,7 @@ Cada tipo tiene un `prompt_template` en BD que se envía a Gemini. La respuesta 
 
 | Servicio | Uso | Coste |
 |----------|-----|-------|
-| Google Gemini 2.0 Flash | Generación de recomendaciones | Gratuito (límite generoso) |
+| Google Gemini 2.5 Flash | Generación de recomendaciones | Gratuito (límite generoso) |
 | OpenWeatherMap | Pronóstico por coordenadas | Gratuito (1000 llamadas/día) |
 | Nominatim (OSM) | Geocodificación de ciudades | Gratuito (1 req/seg máx) |
 | Google OAuth | Login social | Gratuito |
