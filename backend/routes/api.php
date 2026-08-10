@@ -35,7 +35,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('', 'show');
         Route::put('', 'update');
         Route::post('/avatar', 'updateAvatar');
-        Route::get('/{trip}/search', 'searchUsers');
+        Route::get('/{trip}/search', 'searchUsers')->middleware('trip.permission:member');
     });
 
     //------------------TRIP----------------
@@ -45,7 +45,7 @@ Route::middleware('auth:api')->group(function () {
     Route::prefix('user')->controller(TripUserController::class)->group(function () {
         Route::get('/trips', 'getTripsFromUser');
     });
-    Route::prefix('trip')->controller(TripUserController::class)->group(function () {
+    Route::prefix('trip')->middleware('trip.permission:member')->controller(TripUserController::class)->group(function () {
         Route::get('/{trip}/user/permission', 'getPermissionUserFromTrip');
         Route::get('/{trip}/users', 'getUsersFromTrip');
         Route::post('/{trip}/users/{user}', 'addUserToTrip')->middleware('trip.permission:admin');
@@ -56,7 +56,7 @@ Route::middleware('auth:api')->group(function () {
 
     //------------------PET----------------
     Route::apiResource('pets', PetController::class);
-    Route::prefix('trip')->controller(PetController::class)->group(function () {
+    Route::prefix('trip')->middleware('trip.permission:member')->controller(PetController::class)->group(function () {
         Route::post('/{trip}/pets', 'addPetsToTrip');
         Route::delete('/{trip}/pets', 'removePetsFromTrip');
         Route::get('/{trip}/pets', 'getPetsFromTrip');
@@ -64,19 +64,19 @@ Route::middleware('auth:api')->group(function () {
 
     //------------------RECOMMENDATION_TYPE----------------
     Route::apiResource('recommendation_types', RecommendationTypeController::class);
-    Route::prefix('trip')->controller(RecommendationTypeController::class)->group(function () {
+    Route::prefix('trip')->middleware('trip.permission:member')->controller(RecommendationTypeController::class)->group(function () {
         Route::get('{trip}/recommendation_types', 'getRecommendationTypesFromTrip');
     });
 
     //------------------RECOMMENDATION----------------
-    Route::prefix('trip')->controller(RecommendationController::class)->group(function () {
+    Route::prefix('trip')->middleware('trip.permission:member')->controller(RecommendationController::class)->group(function () {
         Route::get('{trip}/recommendations', 'getRecommendationsFromTrip');
         Route::post('{trip}/recommendations', 'generateRecommendationsToTrip');
         Route::delete('{trip}/recommendations', 'destroyAll');
     });
 
     //------------------PET_RECOMMENDATION----------------
-    Route::prefix('trip')->controller(PetRecommendationController::class)->group(function () {
+    Route::prefix('trip')->middleware('trip.permission:member')->controller(PetRecommendationController::class)->group(function () {
         Route::get('{trip}/pet_recommendations', 'getPetRecommendationsFromTrip');
         Route::post('{trip}/pet_recommendations', 'generatePetRecommendationsToTrip');
         Route::delete('{trip}/pet_recommendations', 'destroyAll');
@@ -87,7 +87,7 @@ Route::middleware('auth:api')->group(function () {
 
     //------------------ACTIVITY----------------
     Route::apiResource('activities', ActivityController::class);
-    Route::prefix('trip')->controller(ActivityController::class)->group(function () {
+    Route::prefix('trip')->middleware('trip.permission:member')->controller(ActivityController::class)->group(function () {
         Route::get('{trip}/activities', 'getActivitiesFromTrip');
         Route::post('{trip}/activities', 'addActivitiesToTrip');
         Route::put('{trip}/activities', 'updateActivitiesFromTrip');
@@ -95,7 +95,7 @@ Route::middleware('auth:api')->group(function () {
     });
 
     //------------------LOCATION_TRIP----------------
-    Route::prefix('trip')->controller(LocationTripController::class)->group(function () {
+    Route::prefix('trip')->middleware('trip.permission:member')->controller(LocationTripController::class)->group(function () {
         Route::get('{trip}/locations', 'getLocationsFromTrip');
         Route::get('{trip}/locations/simple', 'getSimpleLocationsFromTrip');
         Route::post('{trip}/locations', 'addLocationsToTrip');
@@ -105,13 +105,13 @@ Route::middleware('auth:api')->group(function () {
 
     //------------------WEATHER_FORECAST----------------
     Route::apiResource('weather_forecasts', WeatherForecastController::class);
-    Route::prefix('trip')->controller(WeatherForecastController::class)->group(function () {
+    Route::prefix('trip')->middleware('trip.permission:member')->controller(WeatherForecastController::class)->group(function () {
         Route::post('{trip}/weather_forecasts', 'addWeatherForecastsToTrip');
         Route::post('{trip}/weather_forecasts/refresh', 'updateWeatherForecastsToTrip');
     });
 
     //------------------DIARY----------------
-    Route::prefix('trip')->controller(DiaryController::class)->group(function () {
+    Route::prefix('trip')->middleware('trip.permission:member')->controller(DiaryController::class)->group(function () {
         Route::get('{trip}/diaries', 'getDiariesFromTrip');
         Route::post('{trip}/diaries', 'store');
         Route::put('{trip}/diaries/{diary}', 'update');
