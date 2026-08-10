@@ -3,6 +3,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Request;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -25,7 +26,15 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'trip.permission' => \App\Http\Middleware\CheckTripPermission::class,
         ]);
+        // No existe ruta `login`: esta app es API + SPA. Sin esto, un invitado sin cabecera
+        // `Accept: application/json` provoca RouteNotFoundException (500) en vez de un 401.
+        $middleware->redirectGuestsTo(fn () => null);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        // La API es JSON-only: sin esto, una petición sin cabecera `Accept: application/json`
+        // hace que Laravel intente redirigir a la ruta `login` (inexistente) y devuelva un 500
+        // con stack trace en vez del 401 correcto.
+        $exceptions->shouldRenderJsonWhen(
+            fn (Request $request) => $request->is('api/*') || $request->expectsJson()
+        );
     })->create();
