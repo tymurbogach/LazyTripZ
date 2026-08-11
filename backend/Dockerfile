@@ -19,6 +19,12 @@ RUN composer dump-autoload --optimize \
     && chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
+# Enlace public/storage -> storage/app/public, el que crea `artisan storage:link`.
+# Se hace aquí a propósito: public/ vive en la capa de la imagen, así que un enlace
+# creado en caliente desaparece al recrear el contenedor y las imágenes dejan de
+# servirse. Horneado en la imagen sobrevive a cualquier recreación.
+RUN ln -sfn ../storage/app/public public/storage
+
 # Apuntar Apache a public/
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' \
