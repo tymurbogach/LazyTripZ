@@ -54,8 +54,8 @@ done
 log "Ejecutando migraciones..."
 compose exec -T backend php artisan migrate --force
 
-# storage:link falla si el enlace ya existe; no es motivo para abortar
-compose exec -T backend php artisan storage:link >/dev/null 2>&1 || true
+# --force lo hace idempotente: sin él falla cuando el enlace ya existe
+compose exec -T backend php artisan storage:link --force >/dev/null 2>&1 || true
 
 log "Cacheando configuración y rutas..."
 compose exec -T backend php artisan config:cache >/dev/null
